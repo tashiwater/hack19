@@ -38,9 +38,9 @@ if __name__ == "__main__":
     checkpoint_path = "training_1/cp.ckpt"
     checkpoint_dir = os.path.dirname(checkpoint_path)
 
-    train_img_dirs = os.listdir("../data")
-    print(train_img_dirs)
-    NUM_CLASSES = len(train_img_dirs) # 分類するクラス数
+    # train_img_dirs = os.listdir("../data")
+    # print(train_img_dirs)
+    # NUM_CLASSES = len(train_img_dirs) # 分類するクラス数
     #print(NUM_CLASSES)
     IMG_SIZE = 28 # 画像の1辺の長さ
     model = tf.keras.models.Sequential([
