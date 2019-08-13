@@ -15,27 +15,27 @@ import time
 import rospy
 from geometry_msgs.msg import Vector3
 from Object import RecognizedObject
-
+current_path = os.path.dirname(__file__)
 def cleanFiles():
-    xml_dirs = os.listdir("./AR/xmls")
-    img_dirs = os.listdir("./AR/imgs")
+    xml_dirs = os.listdir(current_path+"/AR/xmls")
+    img_dirs = os.listdir(current_path+"/AR/imgs")
     if len(xml_dirs) > 0:
         for f in xml_dirs:
             print("remove:", f)
-            os.remove('./AR/xmls/'+f)
+            os.remove(current_path+'/AR/xmls/'+f)
     else:
         print("no pre files")
     if len(img_dirs) > 0:
         for f in img_dirs:
             print("remove:", f)
-            os.remove('./AR/imgs/'+f)
+            os.remove(current_path+'/AR/imgs/'+f)
     else:
         print("no pre files")    
 
 
 if __name__ == "__main__":
     #tensorflow準備
-    checkpoint_path = "training_1/cp.ckpt"
+    checkpoint_path = current_path+"/training_1/cp.ckpt"
     checkpoint_dir = os.path.dirname(checkpoint_path)
 
     # train_img_dirs = os.listdir("../data")
@@ -65,11 +65,11 @@ if __name__ == "__main__":
         objs = []
         images = []
 
-        xml_dirs = os.listdir("./AR/xmls")
+        xml_dirs = os.listdir(current_path+"/AR/xmls")
         if len(xml_dirs) > 0:
             #オブジェクトデータの取得
             for f in xml_dirs:
-                obj = RecognizedObject('./AR/xmls/' + f)
+                obj = RecognizedObject(current_path+'/AR/xmls/' + f)
                 images.append(obj.image_np)
                 objs.append(obj)
             images = np.asarray(images)
