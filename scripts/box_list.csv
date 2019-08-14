@@ -1,6 +1,6 @@
 name,box_x,box_y
-nat,0,0
-neji_10,0,30
-neji_25,0,80
-neji_40,0,130
-washer,0,180
+nat,5,80
+neji_10,5,30
+neji_25,5,80
+neji_40,5,130
+washer,5,30

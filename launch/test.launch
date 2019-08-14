@@ -1,0 +1,8 @@
+<launch>
+    <node pkg="test" type="matching.py" name="matching" launch-prefix="xterm -e"/>
+    <node pkg="test" type="communicate.py" name="communicate" launch-prefix="xterm -e"/>
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" launch-prefix="xterm -e">
+        <param name = "port" value = "/dev/ttyS17"/>
+        <param name = "baud" value = "115200"/>
+    </node>
+</launch>

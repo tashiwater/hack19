@@ -6,7 +6,7 @@ from geometry_msgs.msg import Vector3
 from std_msgs.msg import Bool
 import pandas as pd
 from transform import Transfrom2Machine
-
+import os
 class Subscriber():
     def __init__(self, topic, type_name):
         rospy.Subscriber(topic, type_name, self.call_back)
@@ -17,14 +17,15 @@ class Subscriber():
         self.called = True
 
 if __name__ == "__main__":
+    current_path = os.path.dirname(__file__)
     pub_target = rospy.Publisher('to_mbed',Quaternion,queue_size=1)
     pub_go_sign = rospy.Publisher('to_locate', Bool,queue_size=1)
     rospy.init_node('communicator', anonymous=True)
     sub_target = Subscriber("toCommunicator", Vector3)
     sub_go_sign = Subscriber("from_mbed", Bool)
-    box_df = pd.read_csv("box_list.csv", header=0)
+    box_df = pd.read_csv(current_path + "/box_list.csv", header=0)
     #座標変換用 param: machine座標系で見た画像座標系の原点の座標
-    tf2machine = Transfrom2Machine(150, 180) 
+    tf2machine = Transfrom2Machine(190, 180) 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         rate.sleep()
