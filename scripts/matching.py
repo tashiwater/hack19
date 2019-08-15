@@ -15,6 +15,9 @@ import time
 import rospy
 from geometry_msgs.msg import Vector3
 from Object import RecognizedObject
+from std_srvs.srv import SetBool, SetBoolResponse
+import pandas as pd
+
 current_path = os.path.dirname(__file__)
 def cleanFiles():
     xml_dirs = os.listdir(current_path+"/AR/xmls")
@@ -77,25 +80,47 @@ if __name__ == "__main__":
             
             max_array = predictions.max(axis=1)
             max_index = predictions.argmax(axis=1)
-            
             print(max_array, max_index)
-            use_obj = max_array.argmax()    
-            print(use_obj)
-            #print(predictions)
+            df = pd.Series(max_array)
+            df.sort_values(ascending = False)
+            def generate_index():
+                for i in df.index:
+                    yield i
+            gen = generate_index()
+            #一時的にsrvを適当に使う。後でちゃんとクラスにするべき.srvで値が返せるようにする
+            def callback(request):
+                resp = SetBoolResponse()
+                resp.success = True
+                resp.message = "called. data: " + str(request.data)
+                print(resp.message)
+                use_obj = gen()
+                print("target_img", use_obj)
+                qu = Vector3()
+                qu.x = objs[use_obj].x_m
+                qu.y = objs[use_obj].y_m
+                qu.z = max_index[use_obj]
+                print("pub", qu)
+                pub.publish(qu)
+            rospy.Service("match_srv", SetBool, callback)
+            rospy.spin()
+           
+        #     use_obj = max_array.argmax()    
+        #     print(use_obj)
+        #     #print(predictions)
 
-            #送信用データの定義
-            qu = Vector3()
-            qu.x = objs[use_obj].x_m
-            qu.y = objs[use_obj].y_m
-            qu.z = max_index[use_obj]
-            pub.publish(qu)
-            #画像ファイルの消去###########################################################
-            #cleanFiles()
+        #     #送信用データの定義
+        #     qu = Vector3()
+        #     qu.x = objs[use_obj].x_m
+        #     qu.y = objs[use_obj].y_m
+        #     qu.z = max_index[use_obj]
+        #     pub.publish(qu)
+        #     #画像ファイルの消去###########################################################
+        #     #cleanFiles()
 
 
-        else:
-            print("画像データ待機中")
-            time.sleep(1)
+        # else:
+        #     print("画像データ待機中")
+        #     time.sleep(1)
     
     cv2.destroyAllWindows()
     print("complete")

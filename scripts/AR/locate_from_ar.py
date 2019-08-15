@@ -20,6 +20,23 @@ def make_xml(i, posi):
     tree.write(current_path + '/xmls/' + str(i) + '.xml', encoding="UTF-8")
 
 
+def cleanFiles():
+    xml_dirs = os.listdir(current_path+"/xmls")
+    img_dirs = os.listdir(current_path+"/imgs")
+    if len(xml_dirs) > 0:
+        for f in xml_dirs:
+            print("remove:", f)
+            os.remove(current_path+'/xmls/'+f)
+    else:
+        print("no pre files")
+    if len(img_dirs) > 0:
+        for f in img_dirs:
+            print("remove:", f)
+            os.remove(current_path+'/imgs/'+f)
+    else:
+        print("no pre files")
+
+
 if __name__ == "__main__":
     
     ar_marker_size = 0.02  #ARマーカー一辺[m]
@@ -56,7 +73,7 @@ if __name__ == "__main__":
 
         i = 0
         
-
+        cleanFiles()
         for show, at in zip(cont.show_cont(),cont.get_at()) :
             posi = locate_2d.pred_posi_in_roi(at)
             print(posi)
