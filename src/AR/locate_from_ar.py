@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from ar_detect import ARDetect
+from AR.ar_detect import ARDetect
 import numpy as np
 from cv2 import aruco
 import cv2
 from contours import Contours
 import xml.etree.ElementTree as ET
-from locate2d import Locate2d
+from AR.locate2d import Locate2d
 import os
 
 current_path = os.path.dirname(os.path.abspath(__file__))
+testdata_path = current_path + "/../data/test"
 def make_xml(i, posi):
     parts = ET.Element('parts')
     x = ET.SubElement(parts, "x_m")
@@ -17,7 +18,7 @@ def make_xml(i, posi):
     y = ET.SubElement(parts, "y_m")
     y.text = str(posi[1])
     tree = ET.ElementTree(parts)
-    tree.write(current_path + '/xmls/' + str(i) + '.xml', encoding="UTF-8")
+    tree.write(testdata_path + '/xmls/' + str(i) + '.xml', encoding="UTF-8")
 
 
 def cleanFiles():
@@ -78,7 +79,7 @@ if __name__ == "__main__":
             posi = locate_2d.pred_posi_in_roi(at)
             print(posi)
             cv2.imshow("find" + str(i), show)
-            cv2.imwrite(current_path + "/imgs/img"+ str(i)+".png", show)
+            cv2.imwrite(testdata_path + "/imgs/img"+ str(i)+".png", show)
             make_xml(i, posi)
             i += 1
             cv2.waitKey(100)

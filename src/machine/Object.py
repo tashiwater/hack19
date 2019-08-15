@@ -6,7 +6,6 @@ import numpy as np
 
 import xml.etree.ElementTree as ET
 
-current_path = os.path.dirname(__file__)
 class RecognizedObject():
     def __init__(self, path):
         self.tree = ET.parse(path)
@@ -15,7 +14,8 @@ class RecognizedObject():
         self.y_m = float(root[1].text)
         name = os.path.basename(path)
         self.name,ext = os.path.splitext(name)
-        image = cv2.imread(current_path+'/AR/imgs/img'+self.name+'.png')
+        xml_dir_path = os.path.dirname(path)
+        image = cv2.imread(xml_dir_path+'/../imgs/img'+self.name+'.png')
         self.image = image
         image = cv2.resize(image, (28,28))
         self.image_np = image.flatten().astype(np.float32)/255.0
