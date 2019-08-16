@@ -17,8 +17,8 @@ class RecognizedObject():
         xml_dir_path = os.path.dirname(path)
         image = cv2.imread(xml_dir_path+'/../imgs/img'+self.name+'.png')
         self.image = image
-        image = cv2.resize(image, (28,28))
-        self.image_np = image.flatten().astype(np.float32)/255.0
+        # image = cv2.resize(image, (28,28))
+        # self.image_np = image.flatten().astype(np.float32)/255.0
 
 
     def dispStates(self):

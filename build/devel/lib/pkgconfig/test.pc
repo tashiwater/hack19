@@ -1,0 +1,8 @@
+prefix=/home/torobo/test/src/test/hack19/build/devel
+
+Name: test
+Description: Description of test
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/torobo/test/src/test/hack19/build/devel/lib 
+Requires: 

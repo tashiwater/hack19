@@ -16,18 +16,21 @@ from machine.Object import RecognizedObject
 from std_srvs.srv import SetBool, SetBoolResponse
 import pandas as pd
 
-
+from img_generator import padding
+from learn import Learn
 def make_model(checkpoint_path):
-    IMG_SIZE = 28  # 画像の1辺の長さ
-    model = tf.keras.models.Sequential([
-        keras.layers.Dense(512, activation=tf.nn.relu,
-                            input_shape=(IMG_SIZE*IMG_SIZE*3,)),  # 784
-        keras.layers.Dropout(rate=0.2),
-        keras.layers.Dense(10, activation=tf.keras.activations.softmax)
-    ])
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
-                loss=tf.keras.losses.sparse_categorical_crossentropy,
-                metrics=['accuracy'])
+    learn = Learn()
+    model = learn.create_model()
+    # IMG_SIZE = 28  # 画像の1辺の長さ
+    # model = tf.keras.models.Sequential([
+    #     keras.layers.Dense(512, activation=tf.nn.relu,
+    #                         input_shape=(IMG_SIZE*IMG_SIZE*3,)),  # 784
+    #     keras.layers.Dropout(rate=0.2),
+    #     keras.layers.Dense(10, activation=tf.keras.activations.softmax)
+    # ])
+    # model.compile(optimizer=tf.keras.optimizers.Adam(),
+    #             loss=tf.keras.losses.sparse_categorical_crossentropy,
+    #             metrics=['accuracy'])
     model.load_weights(checkpoint_path)
     return model
 
@@ -39,7 +42,10 @@ class Match():
         checkpoint_path = data_path+"/checkpoint/cp.ckpt"
         checkpoint_dir = os.path.dirname(checkpoint_path)
         self.testdata_path = current_path + "/../data/test"
-        self.model = make_model(checkpoint_path)
+        learn = Learn()
+        self.img_size = learn.img_size
+        self.model = learn.create_model()
+        self.model.load_weights(checkpoint_path)
         self.match()
 
         self.pub = rospy.Publisher('toCommunicator', Vector3, queue_size=10)
@@ -85,9 +91,11 @@ class Match():
         #オブジェクトデータの取得
         for f in xml_dirs:
             obj = RecognizedObject(self.testdata_path+'/xmls/' + f)
-            images.append(obj.image_np)
+            img = padding(obj.image)
+            img = cv2.resize(img, self.img_size)
+            images.append(img)
             self.objs.append(obj)
-        self.images = np.asarray(images)
+        self.images = np.asarray(images).astype('float32')/255
         return True
     
     def predict(self):
