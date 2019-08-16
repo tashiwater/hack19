@@ -35,7 +35,8 @@ def make_model(checkpoint_path):
 class Match():
     def __init__(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
-        checkpoint_path = current_path+"/training_1/cp.ckpt"
+        data_path = current_path + "/../data"
+        checkpoint_path = data_path+"/checkpoint/cp.ckpt"
         checkpoint_dir = os.path.dirname(checkpoint_path)
         self.testdata_path = current_path + "/../data/test"
         self.model = make_model(checkpoint_path)
