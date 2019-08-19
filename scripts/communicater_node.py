@@ -13,13 +13,14 @@ if __name__ == "__main__":
     mbed_go_topic = 'to_mbed'
     current_path = os.path.dirname(os.path.abspath(__file__))
     box_list_path = current_path + "/../data/box_list.csv"
-
+    get_target_srv = "get_target_srv"
+    find_parts_srv = "find_parts_srv"
     #座標変換用 param: machine座標系で見た画像座標系の原点の座標
     tf2machine = Transfrom2Machine(190, 180)
 
     communicater = Communicater(
         matcher_srv, mbed_wait_topic, parts_topic, mbed_go_topic,
-        box_list_path, tf2machine)
+        box_list_path, tf2machine, get_target_srv, find_parts_srv)
     rospy.spin()
 
         

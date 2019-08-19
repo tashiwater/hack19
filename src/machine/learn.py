@@ -17,17 +17,16 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.preprocessing.image import load_img, img_to_array
 from keras.preprocessing.image import ImageDataGenerator
 class Learn():
-    def __init__(self):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        data_path = current_path + "/../data"
+    def __init__(self, data_path):
+       
         self.train_path = data_path + "/train"
         self.box_list_path = data_path + "/box_list.csv"
         
-        checkpoint_path = data_path + "/checkpoint/cp.ckpt"
-        checkpoint_dir = os.path.dirname(checkpoint_path)
+        self.checkpoint_path = data_path + "/checkpoint/cp.ckpt"
+        checkpoint_dir = os.path.dirname(self.checkpoint_path)
         
         self.cp_callback = ModelCheckpoint(
-            checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
+            self.checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
         self.early_stopping = EarlyStopping(
             monitor='val_loss', patience=20, verbose=1, mode='auto')
 
@@ -88,10 +87,6 @@ class Learn():
                             validation_split=0.2, epochs=epochs, callbacks=[self.cp_callback, self.early_stopping])
         return history
 
-    def img_preprocessing(self):
-        pass
-
-
 def plot_history(history):
         # 精度の履歴をプロット
     plt.plot(history.history['acc'])
@@ -111,9 +106,3 @@ def plot_history(history):
     plt.legend(['loss', 'val_loss'], loc='lower right')
     plt.show()
 
-if __name__ == "__main__":
-    learn = Learn()
-    learn.read_data()
-    model = learn.create_model()
-    history = learn.learning(model)
-    plot_history(history)

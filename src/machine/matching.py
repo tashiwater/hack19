@@ -1,69 +1,61 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 import numpy as np
+import pandas as pd
 import cv2
 import xml.etree.ElementTree as ET
-import os
 import matplotlib.pyplot as plt
 import os
+
 import tensorflow as tf
 from tensorflow import keras
-import time
+# import time
 
 import rospy
 from geometry_msgs.msg import Vector3
-from machine.Object import RecognizedObject
 from std_srvs.srv import SetBool, SetBoolResponse
-import pandas as pd
 
-from img_generator import padding
-from learn import Learn
-def make_model(checkpoint_path):
-    learn = Learn()
-    model = learn.create_model()
-    # IMG_SIZE = 28  # 画像の1辺の長さ
-    # model = tf.keras.models.Sequential([
-    #     keras.layers.Dense(512, activation=tf.nn.relu,
-    #                         input_shape=(IMG_SIZE*IMG_SIZE*3,)),  # 784
-    #     keras.layers.Dropout(rate=0.2),
-    #     keras.layers.Dense(10, activation=tf.keras.activations.softmax)
-    # ])
-    # model.compile(optimizer=tf.keras.optimizers.Adam(),
-    #             loss=tf.keras.losses.sparse_categorical_crossentropy,
-    #             metrics=['accuracy'])
-    model.load_weights(checkpoint_path)
-    return model
-
-
+from machine.Object import RecognizedObject
+from machine.img_generator import padding
+from machine.learn import Learn
 class Match():
-    def __init__(self):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        data_path = current_path + "/../data"
-        checkpoint_path = data_path+"/checkpoint/cp.ckpt"
-        checkpoint_dir = os.path.dirname(checkpoint_path)
-        self.testdata_path = current_path + "/../data/test"
-        learn = Learn()
+    def __init__(self, data_path, testdata_path, pub_topic, match_srv, get_target_srv):
+        self.testdata_path = testdata_path
+        learn = Learn(data_path)
         self.img_size = learn.img_size
         self.model = learn.create_model()
-        self.model.load_weights(checkpoint_path)
-        self.match()
+        self.model.load_weights(learn.checkpoint_path)
+        while not rospy.is_shutdown() and self.match() is False:
+            pass
+        self.pub = rospy.Publisher(pub_topic, Vector3, queue_size=1)
+        rospy.Service(match_srv, SetBool, self.srv_callback)
+        rospy.Service(get_target_srv, SetBool, self.get_target_srv_callback)
 
-        self.pub = rospy.Publisher('toCommunicator', Vector3, queue_size=10)
-        rospy.Service("match_srv", SetBool, self.srv_callback)
-
-    def srv_callback(self,request):
+    def srv_callback(self, request):
         resp = SetBoolResponse()
-        resp.success = True
         resp.message = "called. data: " + str(request.data)
         print(resp.message)
-        self.pub_target()
+        resp.success = self.match()
+        return resp
+
+    def get_target_srv_callback(self, request):
+        resp = SetBoolResponse()
+        
+        resp.message = "called. data: " + str(request.data)
+        print(resp.message)
+        if self.i >= len(self.df):  # 全部出力したらfalseを返す
+            resp.success = False
+        else:
+            resp.success = True
+            self.pub_target()
         return resp
 
     def match(self):
         print("matching")
-        while not rospy.is_shutdown() and self.get_test_data() is False:
-            pass
+        if self.get_test_data() is False:
+            return False
         self.predict()
+        return True
 
     def pub_target(self):
         use_obj = self.df.index[self.i]
@@ -85,6 +77,7 @@ class Match():
         images = []
 
         xml_dirs = os.listdir(self.testdata_path+"/xmls")
+        print(xml_dirs)
         if len(xml_dirs) < 1:
             print("there is no xml")
             return False
@@ -100,6 +93,7 @@ class Match():
     
     def predict(self):
         predictions = self.model.predict(self.images)
+        # print(predictions)
         max_array = predictions.max(axis=1)
         self.max_index = predictions.argmax(axis=1)
         print(max_array, self.max_index)
@@ -107,14 +101,7 @@ class Match():
         self.df = pd.Series(max_array)
         self.df.sort_values(ascending=False, inplace=True)
    
-if __name__ == "__main__":
-    rospy.init_node("matching_node")
-    match = Match()
-    rate = rospy.Rate(1)
-    while not rospy.is_shutdown():
-        match.run()
-        rate.sleep()
-    rospy.spin()
+
 
 """
 current_path = os.path.dirname(os.path.abspath(__file__))

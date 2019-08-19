@@ -9,22 +9,27 @@ from std_srvs.srv import SetBool
 
 class Communicater():
     def __init__(self, matcher_srv, mbed_wait_topic, parts_topic, mbed_go_topic, box_list_path, 
-    tf2machine):
+                 tf2machine, get_target_srv, find_parts_srv):
         rospy.Subscriber(mbed_wait_topic, Bool, self.from_mbed_cb)
         rospy.Subscriber(parts_topic, Vector3, self.match_cb)
         self.pub_target = rospy.Publisher(mbed_go_topic, Quaternion, queue_size=1)
         self.matcher_srv_call = None
         rospy.wait_for_service(matcher_srv)
         self.matcher_srv_call = rospy.ServiceProxy(matcher_srv, SetBool)
-        
+        rospy.wait_for_service(get_target_srv)
+        self.get_target_srv_call = rospy.ServiceProxy(get_target_srv, SetBool)
+        rospy.wait_for_service(find_parts_srv)
+        self.find_parts_srv_call = rospy.ServiceProxy(find_parts_srv, SetBool)
         self.box_df = pd.read_csv(box_list_path,header=0)
         self.tf2machine = tf2machine
 
     def from_mbed_cb(self, data):
-        if self.matcher_srv_call is None:
+        if self.matcher_srv_call is None or self.get_target_srv_call is None:
             return
         try:
-            self.matcher_srv_call(True)
+            # self.find_parts_srv_call(True)
+            # self.matcher_srv_call(True)
+            self.get_target_srv_call(True)
         except rospy.ServiceException, e:
             print ("Service call failed: %s" % e)
 

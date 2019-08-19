@@ -36,4 +36,10 @@ if __name__ == "__main__":
     
     find_parts = FindParts( camera_info_path, testdata_path, tempsave_path,
                  locate_2d, cap, find_parts_srv, raw_img_path)
+
+    #trainデータ作成モード
+    traindata_path = data_path + "/train"
+    while not rospy.is_shutdown():
+        find_parts.make_traindata(traindata_path)
+    
     rospy.spin()

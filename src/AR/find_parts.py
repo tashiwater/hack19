@@ -21,6 +21,29 @@ class FindParts():
         rospy.Service(find_parts_srv, SetBool, self.srv_callback)
         print("locate_from_ar setup finish")
 
+    def output_cont(self, output_dir_path):
+        max_num = 0
+        for filename in os.listdir(output_dir_path):
+            num = int(filename[:-4])
+            if num > max_num:
+                max_num = num
+        for i, show in enumerate(self.cont.show_cont()):
+            cv2.imwrite(output_dir_path+"/" + str(i+max_num)+".png", show)
+
+    def make_traindata(self, traindata_path):
+        
+        parts_name = raw_input("Input parts name:")
+        output_path = traindata_path + "/"+ parts_name
+        if self.capture() is False:
+            return False
+        self.ar.find_marker()
+        if self.get_roi() is False:
+            return False
+        self.find_contour()
+        #ファイル作成
+        if parts_name not in os.listdir(traindata_path):
+            os.mkdir(output_path)
+        self.output_cont(output_dir_path)
 
     def srv_callback(self, request):
         resp=SetBoolResponse()
