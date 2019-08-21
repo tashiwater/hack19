@@ -44,8 +44,9 @@ class Contours():
             size_list.append((x,x + w,y, y+h))
             #長方形を図示
             cv2.rectangle(img,(x,y), (x+w,y+h), red, thickness =10)
-        cv2.imshow("contours", img)
+        # cv2.imshow("contours", img)
         self.size_list = size_list
+        return img
 
     def show_cont(self):
         for lis in self.size_list:

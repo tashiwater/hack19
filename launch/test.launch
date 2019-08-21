@@ -3,7 +3,7 @@
     <node pkg="test" type="communicater_node.py" name="communicater_node" output="screen"/>
     <node pkg="test" type="find_parts_node.py" name="find_parts_node" launch-prefix="xterm -e"/>
     <node pkg="rosserial_python" type="serial_node.py" name="serial_node" launch-prefix="xterm -e">
-        <param name = "port" value = "/dev/ttyS17"/>
+        <param name = "port" value = "/dev/ttyACM0"/>
         <param name = "baud" value = "115200"/>
     </node>
 </launch>

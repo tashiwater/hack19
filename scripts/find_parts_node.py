@@ -28,15 +28,22 @@ if __name__ == "__main__":
     camera_matrix, distCoeffs)
 
     locate_2d = Locate2d(ar_detect, 0.2, 0.159, 0.017, 0.005)
-    cap=cv2.VideoCapture(0)  # もともとなかった
-    cap.set(3, 1280)
-    cap.set(4, 720)
+    # cap=cv2.VideoCapture(0) 
+    # cap.set(3, 320)
+    # cap.set(4, 240)
+    # cap.set(5, 5)
+
+
+    def get_frame():
+        # _, frame = cap.read()
+        frame = cv2.imread(data_path + "/temp.jpg")
+        return frame
+
     find_parts_srv=rospy.get_param("~find_parts_srv", "find_parts_srv")
-    raw_img_path = "/mnt/c/Users/shimi/Pictures/Camera Roll/temp.jpg"
     
     find_parts = FindParts( camera_info_path, testdata_path, tempsave_path,
-                 locate_2d, cap, find_parts_srv, raw_img_path)
-
+                 locate_2d, get_frame, find_parts_srv)
+    find_parts.get_testdata()
     #trainデータ作成モード
     traindata_path = data_path + "/train"
     while not rospy.is_shutdown():

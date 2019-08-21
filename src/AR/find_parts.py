@@ -11,13 +11,12 @@ import os
 from AR.contours import Contours
 class FindParts():
     def __init__(self, camera_info_path, testdata_path, tempsave_path,
-                 locate_2d, cap, find_parts_srv, raw_img_path):
+                 locate_2d, get_frame_func, find_parts_srv):
         self.testdata_path = testdata_path
         self.save_path = tempsave_path
-        self.raw_img_path = raw_img_path
         self.locate_2d = locate_2d
         self.ar = self.locate_2d.ar_detect
-        self.cap = cap
+        self.get_frame_func = get_frame_func
         rospy.Service(find_parts_srv, SetBool, self.srv_callback)
         print("locate_from_ar setup finish")
 
@@ -45,24 +44,31 @@ class FindParts():
             os.mkdir(output_path)
         self.output_cont(output_dir_path)
 
+    def get_testdata(self):
+        if self.capture() is False:
+            return False
+        self.ar.find_marker()
+        if self.get_roi() is False:
+            return False
+        self.find_contour()
+        self.output()
+        return True
+
     def srv_callback(self, request):
         resp=SetBoolResponse()
         resp.success=True
         resp.message="called. data: " + str(request.data)
         print(resp.message)
-
-        if self.capture() is False:
-            return resp
-        self.ar.find_marker()
-        if self.get_roi() is False:
-            return resp
-        self.find_contour()
-        self.output()
+        self.get_testdata()
         return resp
 
     def capture(self):
+        # cap=cv2.VideoCapture(1)  # もともとなかった
+        # cv2.waitKey(100)
         # _, frame = self.cap.read()
-        frame = cv2.imread(self.raw_img_path)
+        # _, frame = cap.read()
+        # cap.release()
+        frame = self.get_frame_func()
         if frame is None:
             print("there is no img")
             return False
@@ -86,7 +92,8 @@ class FindParts():
 
     def find_contour(self):
         self.cont = Contours(self.roi_img)
-        self.cont.find_contours()
+        cnt_img = self.cont.find_contours()
+        cv2.imwrite(self.save_path + "/contour.png", cnt_img)
 
     def output(self):
         self.cleanFiles()
