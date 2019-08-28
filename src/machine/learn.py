@@ -28,7 +28,7 @@ class Learn():
         self.cp_callback = ModelCheckpoint(
             self.checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
         self.early_stopping = EarlyStopping(
-            monitor='val_loss', patience=20, verbose=1, mode='auto')
+            monitor='val_loss', patience=200, verbose=1, mode='auto')
 
         self.img_size = (28, 28)
         self.box_df = pd.read_csv(self.box_list_path, header=0)
@@ -53,25 +53,25 @@ class Learn():
 
     def create_model(self):
         model = Sequential()
-        model.add(Conv2D(32, (3, 3), padding='same',
+        model.add(Conv2D(68, (3, 3), padding='same',
                          input_shape=(self.img_size[0], self.img_size[1], 3)))
         model.add(Activation('relu'))
-        model.add(Conv2D(32, (3, 3)))
+        model.add(Conv2D(10, (3, 3)))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.1))
 
-        model.add(Conv2D(64, (3, 3), padding='same'))
+        model.add(Conv2D(10, (3, 3), padding='same'))
         model.add(Activation('relu'))
         model.add(Conv2D(64, (3, 3)))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.1))
 
         model.add(Flatten())
-        model.add(Dense(64))
+        model.add(Dense(512))
         model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.2))
         model.add(Dense(self.class_num))
         model.add(Activation('softmax'))
 
@@ -82,7 +82,7 @@ class Learn():
         return model
 
     def learning(self, model):
-        epochs = 200
+        epochs = 400
         history = model.fit(self.images, self.labels,
                             validation_split=0.2, epochs=epochs, callbacks=[self.cp_callback, self.early_stopping])
         return history

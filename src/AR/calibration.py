@@ -15,7 +15,9 @@ pattern_points *= square_size
 obj_points = []
 img_points = []
 print(pattern_points)
-cap = cv2.VideoCapture(0) #ビデオキャプチャの開始
+cap = cv2.VideoCapture(2) #ビデオキャプチャの開始
+cap.set(3, 1280)
+cap.set(4, 720)
 # for i in glob("*.jpg"):
 for i in range(100):
     if rospy.is_shutdown():
@@ -37,7 +39,7 @@ for i in range(100):
         cv2.drawChessboardCorners(im, pattern_size, corner,found)
         cv2.imshow('found corners in' + fn,im)
     # コーナーがない場合のエラー処理
-    cv2.waitKey(10)
+    cv2.waitKey(1000)
     if not found:
         print 'chessboard not found'
         continue

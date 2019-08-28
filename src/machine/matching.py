@@ -84,8 +84,8 @@ class Match():
         #オブジェクトデータの取得
         for f in xml_dirs:
             obj = RecognizedObject(self.testdata_path+'/xmls/' + f)
-            img = padding(obj.image)
-            img = cv2.resize(img, self.img_size)
+            # img = padding(obj.image)
+            img = cv2.resize(obj.image, self.img_size)
             images.append(img)
             self.objs.append(obj)
         self.images = np.asarray(images).astype('float32')/255

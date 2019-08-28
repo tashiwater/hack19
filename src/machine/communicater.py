@@ -25,10 +25,13 @@ class Communicater():
 
     def from_mbed_cb(self, data):
         if self.matcher_srv_call is None or self.get_target_srv_call is None:
+            print("no service")
             return
         try:
-            # self.find_parts_srv_call(True)
-            # self.matcher_srv_call(True)
+            print("call")
+            self.find_parts_srv_call(True)
+            print("called")
+            self.matcher_srv_call(True)
             self.get_target_srv_call(True)
         except rospy.ServiceException, e:
             print ("Service call failed: %s" % e)

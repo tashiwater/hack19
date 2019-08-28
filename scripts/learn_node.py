@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import os
-from machine.learn import Learn
+from machine.learn import Learn, plot_history
 
 if __name__ == "__main__":
 

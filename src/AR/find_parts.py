@@ -26,6 +26,7 @@ class FindParts():
             num = int(filename[:-4])
             if num > max_num:
                 max_num = num
+        max_num += 1
         for i, show in enumerate(self.cont.show_cont()):
             cv2.imwrite(output_dir_path+"/" + str(i+max_num)+".png", show)
 
@@ -42,7 +43,7 @@ class FindParts():
         #ファイル作成
         if parts_name not in os.listdir(traindata_path):
             os.mkdir(output_path)
-        self.output_cont(output_dir_path)
+        self.output_cont(output_path)
 
     def get_testdata(self):
         if self.capture() is False:
