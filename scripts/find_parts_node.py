@@ -35,7 +35,8 @@ if __name__ == "__main__":
 
 
     def get_frame():
-        _, frame = cap.read()
+        for i in xrange(5):
+            _, frame = cap.read()
         # frame = cv2.imread(data_path + "/temp.jpg")
         return frame
 

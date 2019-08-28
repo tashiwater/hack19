@@ -29,10 +29,16 @@ class Communicater():
             return
         try:
             print("call")
-            self.find_parts_srv_call(True)
-            print("called")
-            self.matcher_srv_call(True)
-            self.get_target_srv_call(True)
+            ret = self.find_parts_srv_call(True)
+            if ret.success is False:
+                return
+            ret = self.matcher_srv_call(True)
+            if ret.success is False:
+                return
+            ret = self.get_target_srv_call(True)
+            if ret.success is False:
+                return
+            
         except rospy.ServiceException, e:
             print ("Service call failed: %s" % e)
 

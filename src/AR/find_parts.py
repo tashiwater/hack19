@@ -57,10 +57,9 @@ class FindParts():
 
     def srv_callback(self, request):
         resp=SetBoolResponse()
-        resp.success=True
+        resp.success=self.get_testdata()
         resp.message="called. data: " + str(request.data)
         print(resp.message)
-        self.get_testdata()
         return resp
 
     def capture(self):
@@ -80,7 +79,8 @@ class FindParts():
     def get_roi(self):
         ar_im = self.ar.get_ar_detect_img()
         # small_im = cv2.resize(ar_im, None, fx = 0.5, fy = 0.5)
-        # cv2.imshow("ar", small_im)
+        cv2.imshow("ar", ar_im)
+        cv2.waitKey(200)
         cv2.imwrite(self.save_path + "/ar_img.png", ar_im)
         self.roi_img = self.locate_2d.get_roi_img()
         if self.roi_img is None:
@@ -94,6 +94,8 @@ class FindParts():
     def find_contour(self):
         self.cont = Contours(self.roi_img)
         cnt_img = self.cont.find_contours()
+        cv2.imshow("contor",cnt_img )
+        cv2.waitKey(200)
         cv2.imwrite(self.save_path + "/contour.png", cnt_img)
 
     def output(self):

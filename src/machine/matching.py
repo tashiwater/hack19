@@ -25,8 +25,8 @@ class Match():
         self.img_size = learn.img_size
         self.model = learn.create_model()
         self.model.load_weights(learn.checkpoint_path)
-        while not rospy.is_shutdown() and self.match() is False:
-            pass
+        # while not rospy.is_shutdown() and self.match() is False:
+            # pass
         self.pub = rospy.Publisher(pub_topic, Vector3, queue_size=1)
         rospy.Service(match_srv, SetBool, self.srv_callback)
         rospy.Service(get_target_srv, SetBool, self.get_target_srv_callback)
@@ -85,6 +85,9 @@ class Match():
         for f in xml_dirs:
             obj = RecognizedObject(self.testdata_path+'/xmls/' + f)
             # img = padding(obj.image)
+            # print(obj.image.size)
+            # cv2.imshow("img", obj.image)
+            # cv2.waitKey(0)
             img = cv2.resize(obj.image, self.img_size)
             images.append(img)
             self.objs.append(obj)
