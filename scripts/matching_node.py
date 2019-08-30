@@ -18,6 +18,6 @@ if __name__ == "__main__":
     pub_topic = 'toCommunicator'
     match_srv = "match_srv"
     get_target_srv = "get_target_srv"
-    match = Match(data_path, testdata_path, pub_topic,
-                  match_srv, get_target_srv)
+    match = Match(data_path, testdata_path)
+    match.set_ros(pub_topic, match_srv, get_target_srv)
     rospy.spin()
