@@ -7,10 +7,6 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 import os
 
-import tensorflow as tf
-from tensorflow import keras
-# import time
-
 # import rospy
 # from geometry_msgs.msg import Vector3
 # from std_srvs.srv import SetBool, SetBoolResponse

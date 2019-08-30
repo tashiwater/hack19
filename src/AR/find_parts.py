@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-import rospy
-from std_srvs.srv import SetBool, SetBoolResponse
+# import rospy
+# from std_srvs.srv import SetBool, SetBoolResponse
 
 import cv2
 import xml.etree.ElementTree as ET
