@@ -17,29 +17,21 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.preprocessing.image import load_img, img_to_array
 from keras.preprocessing.image import ImageDataGenerator
 class Learn():
-    def __init__(self, data_path):
-       
-        self.train_path = data_path + "/train"
-        self.box_list_path = data_path + "/box_list.csv"
-        
-        self.checkpoint_path = data_path + "/checkpoint/cp.ckpt"
-        checkpoint_dir = os.path.dirname(self.checkpoint_path)
-        
+    def __init__(self, data_path, box_df):
+        self.checkpoint_path = data_path+"/checkpoint/cp.ckpt"
+        self.img_size = (28, 28)
+        self.box_df = box_df
+        self.class_num = len(self.box_df)
         self.cp_callback = ModelCheckpoint(
             self.checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
         self.early_stopping = EarlyStopping(
             monitor='val_loss', patience=200, verbose=1, mode='auto')
 
-        self.img_size = (28, 28)
-        self.box_df = pd.read_csv(self.box_list_path, header=0)
-        self.class_num = len(self.box_df)
-
-    def read_data(self):
-
+    def read_data(self, train_path):
         images = []
         labels = []
         for i , parts_name in enumerate(self.box_df.name):
-            parts_dir_name = self.train_path + "/" + parts_name
+            parts_dir_name = train_path + "/" + parts_name
             img_names = os.listdir(parts_dir_name)
             print(img_names)
             for f in img_names:

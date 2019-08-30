@@ -12,7 +12,7 @@ from AR.contours import Contours
 
 
 class FindParts():
-    def __init__(self, camera_info_path, testdata_path, tempsave_path,
+    def __init__(self, testdata_path, tempsave_path,
                  locate_2d, get_frame_func):
         self.testdata_path = testdata_path
         self.save_path = tempsave_path

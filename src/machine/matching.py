@@ -17,38 +17,14 @@ from machine.learn import Learn
 
 
 class Match():
-    def __init__(self, data_path, testdata_path):
+    def __init__(self, data_path, testdata_path, box_df):
         self.testdata_path = testdata_path
-        learn = Learn(data_path)
+        learn = Learn(data_path, box_df)
         self.img_size = learn.img_size
         self.model = learn.create_model()
         self.model.load_weights(learn.checkpoint_path)
         # while not rospy.is_shutdown() and self.match() is False:
         #     pass
-
-    def set_ros(self, pub_topic, match_srv, get_target_srv):
-        self.pub = rospy.Publisher(pub_topic, Vector3, queue_size=1)
-        rospy.Service(match_srv, SetBool, self.srv_callback)
-        rospy.Service(get_target_srv, SetBool, self.get_target_srv_callback)
-
-    def srv_callback(self, request):
-        resp = SetBoolResponse()
-        resp.message = "called. data: " + str(request.data)
-        print(resp.message)
-        resp.success = self.match()
-        return resp
-
-    def get_target_srv_callback(self, request):
-        resp = SetBoolResponse()
-
-        resp.message = "called. data: " + str(request.data)
-        print(resp.message)
-        if self.i >= len(self.df):  # 全部出力したらfalseを返す
-            resp.success = False
-        else:
-            resp.success = True
-            self.pub_target()
-        return resp
 
     def match(self):
         print("matching")
@@ -56,21 +32,6 @@ class Match():
             return False
         self.predict()
         return True
-
-    def pub_target(self):
-        use_obj = self.df.index[self.i]
-        print("target_img", use_obj)
-        qu = Vector3()
-        qu.x = self.objs[use_obj].x_m
-        qu.y = self.objs[use_obj].y_m
-        qu.z = self.max_index[use_obj]
-        print("pub", qu)
-        self.pub.publish(qu)
-        self.i += 1
-
-    def run(self):
-        if self.i >= len(self.df):  # 全部出力したら再度画像を取得して予測
-            self.match()
 
     def get_test_data(self):
         self.objs = []
@@ -103,3 +64,38 @@ class Match():
         self.i = 0
         self.df = pd.Series(max_array)
         self.df.sort_values(ascending=False, inplace=True)
+
+#ROS関連
+    def set_ros(self, pub_topic, match_srv, get_target_srv):
+        self.pub = rospy.Publisher(pub_topic, Vector3, queue_size=1)
+        rospy.Service(match_srv, SetBool, self.srv_callback)
+        rospy.Service(get_target_srv, SetBool, self.get_target_srv_callback)
+
+    def srv_callback(self, request):
+        resp = SetBoolResponse()
+        resp.message = "called. data: " + str(request.data)
+        print(resp.message)
+        resp.success = self.match()
+        return resp
+
+    def pub_target(self):
+        use_obj = self.df.index[self.i]
+        print("target_img", use_obj)
+        qu = Vector3()
+        qu.x = self.objs[use_obj].x_m
+        qu.y = self.objs[use_obj].y_m
+        qu.z = self.max_index[use_obj]
+        print("pub", qu)
+        self.pub.publish(qu)
+        self.i += 1
+
+    def get_target_srv_callback(self, request):
+        resp = SetBoolResponse()
+        resp.message = "called. data: " + str(request.data)
+        print(resp.message)
+        if self.i >= len(self.df):  # 全部出力したらfalseを返す
+            resp.success = False
+        else:
+            resp.success = True
+            self.pub_target()
+        return resp
