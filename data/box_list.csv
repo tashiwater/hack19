@@ -1,4 +1,5 @@
-name,box_x,box_y
-neji_10,5,30
-neji_25,5,80
-neji_40,5,130
+name,box_x,box_y,length
+neji_10,5,5,13
+neji_25,5,55,18
+neji_40,5,105,23
+neji,5,155,28

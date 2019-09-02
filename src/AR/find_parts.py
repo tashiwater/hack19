@@ -49,20 +49,13 @@ class FindParts():
         self.output_cont(output_path)
 
     def get_testdata(self):
-        cv2.destroyAllWindows()
-        finish = False
-        while finish is False:
-            cv2.waitKey(200)
-            if self.capture() is False:
-                continue
-                # return False
-            self.ar.find_marker()
-            if self.get_roi() is False:
-                continue
-                # return False
-            self.find_contour()
-            self.output()
-            finish = True
+        if self.capture() is False:
+            return False
+        self.ar.find_marker()
+        if self.get_roi() is False:
+            return False
+        self.find_contour()
+        # self.output()
         return True
 
     def srv_callback(self, request):
@@ -142,3 +135,14 @@ class FindParts():
                 os.remove(self.testdata_path+'/imgs/'+f)
         else:
             print("no pre files")
+
+    def get_diagonal_mm(self):
+        ret = []
+        for px in self.cont.get_diagonal_px():
+            temp = [px, 0]
+            lenght = self.locate_2d.pred_posi_in_roi(temp)[0]
+            ret.append(lenght)
+        return ret
+
+    def get_neji_output(self):
+        return [[length, self.locate_2d.pred_posi_in_roi(at), img] for length, at, img in zip(self.get_diagonal_mm(), self.cont.get_at(), self.cont.show_cont())]

@@ -36,7 +36,7 @@ class Match():
     def get_test_data(self):
         self.objs = []
         images = []
-
+        self.raw_imgs = []
         xml_dirs = os.listdir(self.testdata_path+"/xmls")
         print(xml_dirs)
         if len(xml_dirs) < 1:
@@ -49,6 +49,7 @@ class Match():
             # print(obj.image.size)
             # cv2.imshow("img", obj.image)
             # cv2.waitKey(0)
+            self.raw_imgs.append(obj.image)
             img = cv2.resize(obj.image, self.img_size)
             images.append(img)
             self.objs.append(obj)
@@ -65,7 +66,7 @@ class Match():
         self.df = pd.Series(max_array)
         self.df.sort_values(ascending=False, inplace=True)
 
-#ROS関連
+# ROS関連
     def set_ros(self, pub_topic, match_srv, get_target_srv):
         self.pub = rospy.Publisher(pub_topic, Vector3, queue_size=1)
         rospy.Service(match_srv, SetBool, self.srv_callback)

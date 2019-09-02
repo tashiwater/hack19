@@ -5,10 +5,10 @@
 
 - launch
     - test.launch : ROSでの実行対象launch.これを起動すればよい
-- scripts
+- scripts : ROSで実行するpyファイル
     - communicater_node.py : communicaterのmain文.これを実行すればcommunicaterが動く
     - ..._node.py : ...のmain文
-- src
+- src : クラスおよびwindowsで実行するpyファイル
     - AR : ARマーカー関連
         - armarkermake.py ARマーカー作成用
         - calibration.py : カメラキャリブレーション時にのみ実行
@@ -24,19 +24,22 @@
             - learn.py : モデル作成用
             - Object.py : xml読み取り
         - move.py : 機体に一連の動作をさせ、ねじの仕分けを実行する
+    - communicate : 通信関連
+        - serial_to_mbed
     - manager.py : windowsで動かすときの全体実行部分
 
 ## Requirement
 
 - python 2 or 3 or more
 - cv2
-- pip install tensorflow --upgrade
-- pip install keras --upgrade
+<!-- - pip install tensorflow --upgrade
+- pip install keras --upgrade -->
+- pip install pyserial
 
 ## Usage
 
 - windows ver
-    1. python sequence.py
+    1. python manager.py
 
 - ROS ver
     1. roslaunch test test.launch
