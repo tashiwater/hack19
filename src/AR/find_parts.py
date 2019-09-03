@@ -82,24 +82,24 @@ class FindParts():
     def get_roi(self):
         ar_im = self.ar.get_ar_detect_img()
         # small_im = cv2.resize(ar_im, None, fx = 0.5, fy = 0.5)
-        cv2.imshow("ar", ar_im)
-        cv2.waitKey(200)
-        cv2.imwrite(self.save_path + "/ar_img.png", ar_im)
+        self.show_img("ar", ar_im)
         self.roi_img = self.locate_2d.get_roi_img()
         if self.roi_img is None:
             print("there is no roi img")
             return False
-        # cv2.namedWindow("roi",  cv2.WINDOW_NORMAL)
-        cv2.imwrite(self.save_path + "/roi.png", self.roi_img)
-        # cv2.imshow("roi", roi_img)
         return True
 
     def find_contour(self):
         self.cont = Contours(self.roi_img)
         cnt_img = self.cont.find_contours()
-        cv2.imshow("contor", cnt_img)
+        return cnt_img
+
+    def show_img(self, name, img, width=400):
+        scale = width / img.shape[1]
+        show = cv2.resize(img, None, fx=scale, fy=scale)
+        cv2.imshow(name, show)
         cv2.waitKey(200)
-        cv2.imwrite(self.save_path + "/contour.png", cnt_img)
+        cv2.imwrite(self.save_path + "/" + name + ".png", img)
 
     def output(self):
         self.cleanFiles()

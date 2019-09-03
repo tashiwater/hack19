@@ -55,7 +55,7 @@ if __name__ == "__main__":
     def get_frame():
         for i in range(5):
             _, frame = cap.read()
-        frame = cv2.imread(tempsave_path + "/raw.png")
+        # frame = cv2.imread(tempsave_path + "/raw.png")
         return frame
     # パーツ検出
     find_parts = FindParts(testdata_path, tempsave_path,
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     # serial通信
     myserial = MySerial()
-    # myserial.init_port()
+    myserial.init_port()
 
 
 # ボタンでモード選択

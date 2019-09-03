@@ -20,10 +20,11 @@
     - machine : 機械学習関連
         - communicater.py : ROSの通信仲介
         - img_generator.py : 画像かさ増し用
-        - matching.py : 画像認識
+        - matching.py : CNNによる画像認識
             - learn.py : モデル作成用
             - Object.py : xml読み取り
         - move.py : 機体に一連の動作をさせ、ねじの仕分けを実行する
+        - neji_matching.py : 対角線の長さによる分別 
     - communicate : 通信関連
         - serial_to_mbed
     - manager.py : windowsで動かすときの全体実行部分
@@ -35,6 +36,8 @@
 <!-- - pip install tensorflow --upgrade
 - pip install keras --upgrade -->
 - pip install pyserial
+- pip install numpy
+- pip install pandas
 
 ## Usage
 

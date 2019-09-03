@@ -39,7 +39,3 @@ class NejiMatch():
                 pd.Series([temp.idxmin(), temp.min(), length],
                           index=self.df.columns), ignore_index=True)
         self.df.sort_values(ascending=True, inplace=True, by="score")
-
-    def paint(self, cont_list):
-        for i in self.df.index:
-            print(i)
