@@ -76,7 +76,7 @@ if __name__ == "__main__":
         move = Move(data_path, testdata_path, find_parts,
                     box_df, tf2machine, myserial)
         while True:
-            # cv2.destroyAllWindows()
+            cv2.destroyAllWindows()
             move.run()
             cv2.waitKey(500)
             # if move.run() is True:
