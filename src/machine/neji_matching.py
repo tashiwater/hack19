@@ -14,6 +14,7 @@ class NejiMatch():
     def __init__(self, box_df):
         self.box_df = box_df
         self.template_length = box_df.length
+        self.template_length += 3
 
     def get_test_data(self, get_neji_output):
         self.objs = []
@@ -32,6 +33,7 @@ class NejiMatch():
         self.df = pd.DataFrame(columns=["class_id", "score", "length"])
         # print("self.diagonal", self.diagonal)
         for length in self.diagonal:
+
             temp = abs(self.template_length - length * 1000)
             # temp = temp / self.template_length
             # print(temp)

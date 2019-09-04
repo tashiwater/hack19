@@ -76,13 +76,14 @@ if __name__ == "__main__":
         move = Move(data_path, testdata_path, find_parts,
                     box_df, tf2machine, myserial)
         while True:
+            # cv2.destroyAllWindows()
+            move.run()
             cv2.waitKey(500)
-            cv2.destroyAllWindows()
-            if move.run() is True:
-                # mbedが動き終わるまで待つ
-                cv2.waitKey(6000)
-            else:
-                cv2.waitKey(0)
+            # if move.run() is True:
+            #     # mbedが動き終わるまで待つ
+            #     cv2.waitKey(6000)
+            # else:
+            #     cv2.waitKey(0)
     # elif mode == "learn":
     #     option = "learn"
     #     if option == "learn":

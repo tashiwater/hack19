@@ -22,6 +22,11 @@ class Move():
         #     print("color", self.color_map(i))
 
     def run(self):
+        self.ser.inWaiting()
+        from_mbed = self.myserial.buffer_read(20)
+        if "go" not in from_mbed:
+            return False
+
         if self.find_parts.get_testdata() is False:
             return False
         cv2.waitKey(500)

@@ -22,19 +22,22 @@ class MySerial():
         self.ser.timeout = 5  # sec
 
     def write(self, data):
-        self.ser.flushOutput()
+        # self.ser.flushOutput()
         data_str = str(data)
         self.ser.write(data_str.encode(encoding='utf-8'))
-        self.ser.flushOutput()
+        # self.ser.flushOutput()
         print("send:", data)
 
-    def read(self, r_size):
-        self.ser.flushInput()
+    def buffer_read(self, r_size):
+        """bufferに溜まっているものも読む"""
         r_data = self.ser.read_until(size=r_size)  # size分Read
-
         got_str = r_data.decode(encoding="utf-8")
         print('Recv: ' + got_str)
         return got_str
+
+    def read(self, r_size):
+        self.ser.flushInput()
+        return self.buffer_read(r_size)
 
 
 if __name__ == '__main__':
