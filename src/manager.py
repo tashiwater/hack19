@@ -76,25 +76,8 @@ if __name__ == "__main__":
         move = Move(data_path, testdata_path, find_parts,
                     box_df, tf2machine, myserial)
         while True:
-            cv2.destroyAllWindows()
-            move.run()
+            if move.run() is True:
+                pass
+            else:
+                pass
             cv2.waitKey(500)
-            # if move.run() is True:
-            #     # mbedが動き終わるまで待つ
-            #     cv2.waitKey(6000)
-            # else:
-            #     cv2.waitKey(0)
-    # elif mode == "learn":
-    #     option = "learn"
-    #     if option == "learn":
-    #             # 学習モード用
-    #         learn = Learn(data_path, box_df)
-    #         learn.read_data(train_path)
-    #         model = learn.create_model()
-    #         history = learn.learning(model)
-    #         plot_history(history)
-    #     elif option == "arrange_category":
-    #         # カテゴリの名前や回収位置についての情報を入れるbox_dfを修正
-    #         pass
-    #     elif option == "add_data":
-    #         find_parts.make_traindata(train_path)

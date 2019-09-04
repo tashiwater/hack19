@@ -38,6 +38,11 @@
 - pip install pyserial
 - pip install numpy
 - pip install pandas
+- pip install kivy
+- pip install kivy-garden
+- garden install contextmenu
+- pip install docutils pygments pypiwin32 kivy.deps.sdl2
+- pip install kivy.deps.glew
 
 ## Usage
 

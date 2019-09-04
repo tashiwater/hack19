@@ -22,8 +22,8 @@ class Move():
         #     print("color", self.color_map(i))
 
     def run(self):
-        from_mbed = self.myserial.buffer_read(20)
-        if "go" not in from_mbed:
+        self.back_str = self.myserial.buffer_read(20)
+        if "go" not in self.back_str:
             return False
 
         if self.find_parts.get_testdata() is False:
@@ -39,7 +39,7 @@ class Move():
         x = self.match.objs[use_obj].x_m
         y = self.match.objs[use_obj].y_m
         z = self.match.df.head(1)["class_id"]
-        cv2.imshow("target_img_class" + str(z), self.match.raw_imgs[use_obj])
+        cv2.imshow("target", self.match.raw_imgs[use_obj])
 
         print("img posi", x, y)
         print("target", self.match.df.head(1))
@@ -52,8 +52,12 @@ class Move():
         print("pub to mbed ", to_mbed_x, to_mbed_y, to_mbed_z, to_mbed_w)
         double_list = [to_mbed_x, to_mbed_y, to_mbed_z, to_mbed_w]
         int_list = list(map(int, double_list))
+        # self.back_str = self.myserial.buffer_read(20)
+        while "wait_target" not in self.myserial.buffer_read(20):
+            pass
+        # while True:
         self.myserial.write(int_list)
-        self.myserial.read(20)
+        self.back_str = self.myserial.read(20)
         return True
 
     def paint(self, cont_list, df, roi_img):
