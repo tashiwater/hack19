@@ -69,12 +69,11 @@ class Move():
         self.back_str = self.myserial.buffer_read(20)
         if "go" not in self.back_str:
             return self.errs.index("something")
-        while "wait_target" not in self.myserial.buffer_read(20):
-            pass
-        # while True:
         int_list = self.no_serial_run(solenoid_stock, solenoid_pick)
         if not isinstance(int_list, list):
             return int_list
+        while "wait_target" not in self.myserial.buffer_read(20):
+            pass
         self.myserial.write(int_list)
         self.back_str = self.myserial.read(30)
         return self.errs.index("nothing")

@@ -150,8 +150,9 @@ class StartMenu(Screen):
         self.move = Move(self.data_path, self.testdata_path, self.find_parts,
                          self.box_df, self.tf2machine, self.myserial, self.weight_dist, self.weight_diff)
         print("play")
-        # self.myserial.init_port(self.ids.select_number.id)
-        # self.myserial.ser.send_break()
+        if self.myserial.init_port(self.ids.select_number.id) is False:
+            return
+        self.myserial.mbed_reset()
         Clock.schedule_interval(self.update, 2.0)
         #    self.image_capture.release()
 
@@ -171,7 +172,8 @@ class StartMenu(Screen):
         camera_1.texture = image_texture
 
     def update(self, dt):
-        err = self.move.no_serial_run(0.5, 0.3)
+        # err = self.move.no_serial_run(0.5, 0.3)
+        err = self.move.run(0.5, 0.3)
         if isinstance(err, list):
             pass
         else:

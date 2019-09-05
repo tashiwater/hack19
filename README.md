@@ -30,7 +30,8 @@
         - slack.py
     - gui
         - box_config.py : ボックスに対応するネジ長さ決定場面のクラス
-    - manager.py : windowsで動かすときの全体実行部分
+    - manager.py : windowsで動かすとき(GUIなし）の全体実行部分.未更新
+    - gui.py : GUIで動かすときの実行部分。
 
 ## Requirement
 

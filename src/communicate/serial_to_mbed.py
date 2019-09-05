@@ -20,13 +20,20 @@ class MySerial():
 
     def init_port(self, use_port):
         # use_port = self.search_com_port()
-        if self.ser is None:
+        if use_port is None:
+            return False
+        if self.ser is not None:
             self.ser.close()
+        # print("use_port", use_port)
+
         self.ser = serial.Serial(use_port)
+
         self.ser.baundrate = 9600
         self.ser.timeout = 5  # sec
 
     def write(self, data):
+        if self.ser is None:
+            return
         # self.ser.flushOutput()
         data_str = str(data)
         self.ser.write(data_str.encode(encoding='utf-8'))
@@ -34,6 +41,8 @@ class MySerial():
         print("send:", data)
 
     def buffer_read(self, r_size):
+        if self.ser is None:
+            return
         """bufferに溜まっているものも読む"""
         r_data = self.ser.read_until(size=r_size)  # size分Read
         got_str = r_data.decode(encoding="utf-8")
@@ -41,8 +50,15 @@ class MySerial():
         return got_str
 
     def read(self, r_size):
+        if self.ser is None:
+            return
         self.ser.flushInput()
         return self.buffer_read(r_size)
+
+    def mbed_reset(self):
+        if self.ser is None:
+            return
+        self.ser.send_break()
 
 
 if __name__ == '__main__':
