@@ -5,7 +5,7 @@
 
 - launch
     - test.launch : ROSでの実行対象launch.これを起動すればよい
-- scripts : ROSで実行するpyファイル
+- scripts : ROSで実行するpyファイル.未更新
     - communicater_node.py : communicaterのmain文.これを実行すればcommunicaterが動く
     - ..._node.py : ...のmain文
 - src : クラスおよびwindowsで実行するpyファイル
@@ -17,16 +17,19 @@
             - contours.py : 二値化してboundary検出
             - locate2d.py : 画像からROIを決め、パーツの座標を計算するツール提供
         - transform.py : 画像座標系から機体座標系に変換
-    - machine : 機械学習関連
-        - communicater.py : ROSの通信仲介
-        - img_generator.py : 画像かさ増し用
-        - matching.py : CNNによる画像認識
+    - machine : 機体の動き,機械学習関連
+        - communicater.py : ROSの通信仲介.未更新
+        - img_generator.py : 画像かさ増し用.未更新
+        - matching.py : CNNによる画像認識.未更新
             - learn.py : モデル作成用
             - Object.py : xml読み取り
         - move.py : 機体に一連の動作をさせ、ねじの仕分けを実行する
         - neji_matching.py : 対角線の長さによる分別 
     - communicate : 通信関連
-        - serial_to_mbed
+        - serial_to_mbed.py
+        - slack.py
+    - gui
+        - box_config.py : ボックスに対応するネジ長さ決定場面のクラス
     - manager.py : windowsで動かすときの全体実行部分
 
 ## Requirement

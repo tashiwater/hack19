@@ -5,6 +5,9 @@ import serial.tools.list_ports
 
 
 class MySerial():
+    def __init__(self):
+        self.ser = None
+
     def search_com_port(self):
         coms = serial.tools.list_ports.comports()
         comlist = []
@@ -15,8 +18,10 @@ class MySerial():
         print('Use COM port: ' + use_port)
         return use_port
 
-    def init_port(self):
+    def init_port(self, use_port):
         # use_port = self.search_com_port()
+        if self.ser is None:
+            self.ser.close()
         self.ser = serial.Serial(use_port)
         self.ser.baundrate = 9600
         self.ser.timeout = 5  # sec

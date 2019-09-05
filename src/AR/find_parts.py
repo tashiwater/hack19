@@ -15,7 +15,7 @@ class FindParts():
     def __init__(self, testdata_path, tempsave_path,
                  locate_2d, get_frame_func):
         self.testdata_path = testdata_path
-        self.save_path = tempsave_path
+        self.tempsave_path = tempsave_path
         self.locate_2d = locate_2d
         self.ar = self.locate_2d.ar_detect
         self.get_frame_func = get_frame_func
@@ -77,13 +77,14 @@ class FindParts():
             print("there is no img")
             return False
         self.ar.img = frame
-        cv2.imwrite(self.save_path + "/raw.png", self.ar.img)
+        cv2.imwrite(self.tempsave_path + "/raw.png", self.ar.img)
         return True
 
     def get_roi(self):
         self.ar_im = self.ar.get_ar_detect_img()
         # small_im = cv2.resize(ar_im, None, fx = 0.5, fy = 0.5)
         # self.show_img("ar", ar_im)
+        cv2.imwrite(self.testdata_path + "/ar.png", self.ar_im)
         self.roi_img = self.locate_2d.get_roi_img()
         if self.roi_img is None:
             print("there is no roi img")
@@ -100,7 +101,7 @@ class FindParts():
         show = cv2.resize(img, None, fx=scale, fy=scale)
         cv2.imshow(name, show)
         cv2.waitKey(200)
-        cv2.imwrite(self.save_path + "/" + name + ".png", img)
+        cv2.imwrite(self.tempsave_path + "/" + name + ".png", img)
 
     def output(self):
         self.cleanFiles()

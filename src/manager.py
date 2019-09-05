@@ -14,7 +14,6 @@ from AR.find_parts import FindParts
 from AR.transform import Transfrom2Machine
 from communicate.serial_to_mbed import MySerial
 from communicate.slack import SlackBot
-from move import Move
 # from machine.learn import Learn, plot_history
 
 if __name__ == "__main__":

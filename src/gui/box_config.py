@@ -25,15 +25,15 @@ class BoxConfig(Screen, BoxLayout):
 
     def save(self):
         box_df = pd.read_csv(self.box_list_path, header=0)
-        box_df.name[0] = self.ids.text_a.text
-        box_df.name[1] = self.ids.text_b.text
-        box_df.name[2] = self.ids.text_c.text
-        box_df.name[3] = self.ids.text_d.text
+        box_df.loc[0, "name"] = self.ids.text_a.text
+        box_df.loc[1, "name"] = self.ids.text_b.text
+        box_df.loc[2, "name"] = self.ids.text_c.text
+        box_df.loc[3, "name"] = self.ids.text_d.text
 
-        box_df.length[0] = self.ids.slider_a.value
-        box_df.length[1] = self.ids.slider_b.value
-        box_df.length[2] = self.ids.slider_c.value
-        box_df.length[3] = self.ids.slider_d.value
+        box_df.loc[0, "length"] = self.ids.slider_a.value
+        box_df.loc[1, "length"] = self.ids.slider_b.value
+        box_df.loc[2, "length"] = self.ids.slider_c.value
+        box_df.loc[3, "length"] = self.ids.slider_d.value
         box_df.to_csv(self.box_list_path, index=False)
 
     # 以下不要

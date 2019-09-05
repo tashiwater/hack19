@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 import cv2
-# from machine.matching import Match
 from machine.neji_matching import NejiMatch
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,7 +21,7 @@ class Move():
         self.class_result_img = None
         self.target_img = None
 
-    def no_serial_run(self):
+    def no_serial_run(self, solenoid_stock, solenoid_pick):
         if self.find_parts.get_testdata() is False:
             return self.errs.index("something")
         cv2.waitKey(500)
@@ -53,11 +52,11 @@ class Move():
             box = self.box_df.iloc[id]
             to_mbed_z = box.box_x
             to_mbed_w = box.box_y
-            solenoid = 0.5
+            solenoid = solenoid_pick
         else:
             to_mbed_z = pick_place[0]
             to_mbed_w = pick_place[1]
-            solenoid = 0.3
+            solenoid = solenoid_stock
 
         print("pub to mbed ", to_mbed_x, to_mbed_y,
               to_mbed_z, to_mbed_w, solenoid)
@@ -66,14 +65,14 @@ class Move():
         pub_list.append(solenoid)
         return pub_list
 
-    def run(self, solenoid):
+    def run(self, solenoid_stock, solenoid_pick):
         self.back_str = self.myserial.buffer_read(20)
         if "go" not in self.back_str:
             return self.errs.index("something")
         while "wait_target" not in self.myserial.buffer_read(20):
             pass
         # while True:
-        int_list = self.no_serial_run()
+        int_list = self.no_serial_run(solenoid_stock, solenoid_pick)
         if not isinstance(int_list, list):
             return int_list
         self.myserial.write(int_list)
@@ -85,7 +84,7 @@ class Move():
         self.match.df["is_stock"] = 0
         for i in range(len(self.match.df)):
             if self.match.objs[i][0] < separate_x_m:
-                self.match.df["is_stock"][i] = 1
+                self.match.df.loc[i, "is_stock"] = 1
         self.match.df.sort_values(
             ascending=True, inplace=True, by=["is_stock", "score"])
 
@@ -94,12 +93,8 @@ class Move():
         for index, row in match.df.iterrows():
 
             clas = int(row["class_id"])
-            # print("class", clas)
-            # bgra = np.asarray(self.color_map(clas)) * 255
-            # print("bgra", bgra)
             bgr = np.asarray(
                 [match.box_df.color_b[clas], match.box_df.color_g[clas], match.box_df.color_r[clas]])
             cv2.rectangle(show, (cont_list[index][0], cont_list[index][2]), (cont_list[index][1], cont_list[index][3]),
                           bgr.tolist(), thickness=10)
-        # self.find_parts.show_img("class", show)
         return show

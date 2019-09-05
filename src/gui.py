@@ -1,48 +1,48 @@
-from gui.box_config import BoxConfig
-from kivy.garden.contextmenu import ContextMenuTextItem
-import kivy.garden.contextmenu
-from kivy.lang import Builder
-from kivy.resources import resource_add_path
-from kivy.core.text import LabelBase, DEFAULT_FONT
-from kivy.uix.textinput import TextInput
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.config import Config
-from kivy.graphics.texture import Texture
-from kivy.clock import Clock
-from kivy.vector import Vector
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+from machine.move import Move
+from communicate.slack import SlackBot
+from communicate.serial_to_mbed import MySerial
+from AR.transform import Transfrom2Machine
+from AR.find_parts import FindParts
+from AR.locate2d import Locate2d
+from AR.ar_detect import ARDetect
+import signal
+from cv2 import aruco
+import pandas as pd
+import serial
+import serial.tools.list_ports
+import time
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from kivy.app import App
+from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty,\
     ObjectProperty, StringProperty, OptionProperty
-from kivy.uix.widget import Widget
-from kivy.app import App
-import matplotlib.pyplot as plt
-import numpy as np
-import cv2
-import time
-import serial.tools.list_ports
+from kivy.vector import Vector
+from kivy.clock import Clock
+from kivy.graphics.texture import Texture
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.textinput import TextInput
+from kivy.core.text import LabelBase, DEFAULT_FONT
+from kivy.resources import resource_add_path
+from kivy.lang import Builder
+import kivy.garden.contextmenu
+from kivy.garden.contextmenu import ContextMenuTextItem
+from gui.box_config import BoxConfig
 import os
 import kivy
-import serial
+from kivy.config import Config
 
-import numpy as np
-import pandas as pd
-import os
-import cv2
-from cv2 import aruco
-import signal
-
-from AR.ar_detect import ARDetect
-from AR.locate2d import Locate2d
-from AR.find_parts import FindParts
-from AR.transform import Transfrom2Machine
-from communicate.serial_to_mbed import MySerial
-from communicate.slack import SlackBot
-from move import Move
-kivy.require('1.1.1')
 current_path = os.path.dirname(os.path.abspath(__file__))
 config_path = current_path + "/gui/config.ini"
 Config.read(current_path)
+
+
+kivy.require('1.1.1')
 
 resource_add_path("C:\Windows\Fonts")
 
@@ -66,8 +66,6 @@ class StartMenu(Screen):
         testdata_path = data_path + "/test"
         tempsave_path = data_path + "/temp"
         box_list_path = data_path + "/box_list.csv"
-        checkpoint_path = data_path+"/checkpoint/cp.ckpt"
-        train_path = data_path + "/train"
 
         # ARマーカー検出用クラス
         camera_matrix = np.loadtxt(camera_info_path + "/cameraMatrix.csv",
@@ -87,14 +85,14 @@ class StartMenu(Screen):
                              remove_x_m, remove_y_m)
 
         # カメラから画像を取得する関数
-        cap = cv2.VideoCapture(1)
-        cap.set(3, 1280)
-        cap.set(4, 720)
+        # cap = cv2.VideoCapture(1)
+        # cap.set(3, 1280)
+        # cap.set(4, 720)
 
         def get_frame():
-            for i in range(5):
-                _, frame = cap.read()
-            # frame = cv2.imread(tempsave_path + "/raw.png")
+            # for i in range(5):
+            #     _, frame = cap.read()
+            frame = cv2.imread(tempsave_path + "/raw.png")
             return frame
         # パーツ検出
         find_parts = FindParts(testdata_path, tempsave_path,
@@ -105,22 +103,20 @@ class StartMenu(Screen):
 
         token = "xoxb-747399510036-750051690710-kGAhp4qvKZdynosrYrPEuGJd"  # 取得したトークン
         channel = "CMZRH5VR6"  # チャンネルID
-        slack_bot = SlackBot(token, channel)
-        weight_dist = 1
-        weight_diff = 100
+        self.slack_bot = SlackBot(token, channel)
         self.data_path = data_path
         self.testdata_path = testdata_path
         self.box_list_path = box_list_path
         self.find_parts = find_parts
         self.tf2machine = tf2machine
-        self.weight_dist = weight_dist
-        self.weight_diff = weight_diff
+        self.weight_dist = 1
+        self.weight_diff = 100
+        self.myserial = MySerial()
 
     def say_hello(self, text):
         self.ids.select_number.id = text.id
         self.ids.com.color = 0, 1, 0, 1
-        self.ids.com.text = "                                               COM:" + \
-            str(text.id)
+        self.ids.com.text = "         COM:" + str(text.id)
 
     def add_text(self, com):
         self.add = ContextMenuTextItem(text=str(com), id=str(com.device))
@@ -149,20 +145,14 @@ class StartMenu(Screen):
     image_capture = ObjectProperty(None)
 
     def play(self):
-        #global flgPlay
-        #flgPlay = not flgPlay
-        # if flgPlay == True:
-        # self.image_capture = cv2.VideoCapture(0)
-                # serial通信
-        myserial = MySerial()
-        myserial.init_port(self.ids.select_number.id)
+
         self.box_df = pd.read_csv(self.box_list_path, header=0)
         self.move = Move(self.data_path, self.testdata_path, self.find_parts,
-                         self.box_df, self.tf2machine, myserial, self.weight_dist, self.weight_diff)
+                         self.box_df, self.tf2machine, self.myserial, self.weight_dist, self.weight_diff)
         print("play")
-        Clock.schedule_interval(self.update, 1.0)
-        # else:
-        #    Clock.unschedule(self.update)
+        # self.myserial.init_port(self.ids.select_number.id)
+        # self.myserial.ser.send_break()
+        Clock.schedule_interval(self.update, 2.0)
         #    self.image_capture.release()
 
     def stop(self):
@@ -181,23 +171,16 @@ class StartMenu(Screen):
         camera_1.texture = image_texture
 
     def update(self, dt):
-        err = self.move.run(0.7)
+        err = self.move.no_serial_run(0.5, 0.3)
         if isinstance(err, list):
             pass
         else:
             if self.move.errs[err] == "no_parts":
-                pass
-                # slack_bot.send("finish parts sort",
-                #                "finish", tempsave_path + "/ar.png")
-                # cv2.waitKey(0)
-                # cv2.waitKey(500)
-                # カスケードファイルを指定して検出器を作成
-                #cascade_file = "haarcascade_frontalface_alt.xml"
-                #cascade = cv2.CascadeClassifier(cascade_file)
-                # ここにopencvの処理入れて
-                # str(self.manager.get_screen('test').port_number)がポート名
-
-                # カメラ映像を上下左右反転2
+                # pass
+                print("err in ")
+                self.slack_bot.send("finish parts sort",
+                                    "finish", self.find_parts.tempsave_path + "/ar.png")
+                Clock.unschedule(self.update)
         self.add_img(self.move.find_parts.ar_im, "camera_1")
         self.add_img(self.move.class_result_img, "camera_2")
         self.add_img(self.move.target_img, "camera_3")
