@@ -19,6 +19,7 @@ class FindParts():
         self.locate_2d = locate_2d
         self.ar = self.locate_2d.ar_detect
         self.get_frame_func = get_frame_func
+        self.ar_im = None
         print("locate_from_ar setup finish")
 
     def set_srv(self, find_parts_srv):
@@ -80,9 +81,9 @@ class FindParts():
         return True
 
     def get_roi(self):
-        ar_im = self.ar.get_ar_detect_img()
+        self.ar_im = self.ar.get_ar_detect_img()
         # small_im = cv2.resize(ar_im, None, fx = 0.5, fy = 0.5)
-        self.show_img("ar", ar_im)
+        # self.show_img("ar", ar_im)
         self.roi_img = self.locate_2d.get_roi_img()
         if self.roi_img is None:
             print("there is no roi img")

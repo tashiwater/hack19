@@ -16,7 +16,7 @@ class MySerial():
         return use_port
 
     def init_port(self):
-        use_port = self.search_com_port()
+        # use_port = self.search_com_port()
         self.ser = serial.Serial(use_port)
         self.ser.baundrate = 9600
         self.ser.timeout = 5  # sec

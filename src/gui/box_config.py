@@ -10,7 +10,7 @@ class BoxConfig(Screen, BoxLayout):
     def __init__(self, **kwargs):
         super(BoxConfig, self).__init__(**kwargs)
         current_path = os.path.dirname(os.path.abspath(__file__))
-        data_path = current_path + "/../data"
+        data_path = current_path + "/../../data"
         self.box_list_path = data_path + "/box_list.csv"
         box_df = pd.read_csv(self.box_list_path, header=0)
         # print(box_df[0])

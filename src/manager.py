@@ -13,6 +13,7 @@ from AR.locate2d import Locate2d
 from AR.find_parts import FindParts
 from AR.transform import Transfrom2Machine
 from communicate.serial_to_mbed import MySerial
+from communicate.slack import SlackBot
 from move import Move
 # from machine.learn import Learn, plot_history
 
@@ -68,16 +69,25 @@ if __name__ == "__main__":
     myserial = MySerial()
     myserial.init_port()
 
-
+    token = "xoxb-747399510036-750051690710-kGAhp4qvKZdynosrYrPEuGJd"  # 取得したトークン
+    channel = "CMZRH5VR6"  # チャンネルID
+    slack_bot = SlackBot(token, channel)
 # ボタンでモード選択
     mode = "move"
     box_df = pd.read_csv(box_list_path, header=0)
+    weight_dist = 1
+    weight_diff = 100
     if mode == "move":
         move = Move(data_path, testdata_path, find_parts,
-                    box_df, tf2machine, myserial)
+                    box_df, tf2machine, myserial, weight_dist, weight_diff)
         while True:
-            if move.run() is True:
+            # err = move.no_serial_run()
+            err = move.run(0.7)
+            if isinstance(err, list):
                 pass
             else:
-                pass
+                if move.errs[err] == "no_parts":
+                    # slack_bot.send("finish parts sort",
+                    #                "finish", tempsave_path + "/ar.png")
+                    cv2.waitKey(0)
             cv2.waitKey(500)
