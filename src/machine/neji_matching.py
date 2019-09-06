@@ -4,17 +4,11 @@ import numpy as np
 import pandas as pd
 
 
-class Obj():
-    def __init__(self, x_m, y_m):
-        self.x_m = x_m
-        self.y_m = y_m
-
-
 class NejiMatch():
     def __init__(self, box_df, weight_dist, weight_diff):
         self.box_df = box_df
         self.template_length = box_df.length
-        self.template_length += 3
+        print("self.template_length1", self.template_length )
         self.weight_dist = weight_dist
         self.weight_diff = weight_diff
 
@@ -38,13 +32,11 @@ class NejiMatch():
 
         # print("self.diagonal", self.diagonal)
         for length in self.diagonal:
-
-            diff_to_template = abs(self.template_length - length * 1000)
-            # temp = temp / self.template_length
-            # print(temp)
+            diff_to_template = abs(self.template_length - length * 1000 + 3)
             self.df = self.df.append(
                 pd.Series([diff_to_template.idxmin(), diff_to_template.min(), length, 10000, 10000],
                           index=self.df.columns), ignore_index=True)
+        print("self.template_length2", self.template_length )
         for index in range(len(self.df)):
             posi = self.objs[index]
             for i, obj in enumerate(self.objs):

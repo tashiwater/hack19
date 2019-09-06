@@ -14,9 +14,10 @@ def get_img(name):
 
 
 class Contours():
-    def __init__(self, img):
+    def __init__(self, img, thresh):
         self.raw_img = img.copy()
         self.img = img.copy()
+        self.thresh = thresh
 
     def find_contours(self):
         img = self.img
@@ -27,7 +28,7 @@ class Contours():
         # 二値化. thresh:閾値.  maxval:閾値以上(指定により閾値以下のこともある)の値を持つ画素に対して割り当てられる値,
         # type:二値化の方法。cv2.THRESH_BINARY_INVだと白黒かつ反転
         # 返り値:[1]に画像が入っている
-        im2 = cv2.threshold(graygauss, thresh=100, maxval=240,
+        im2 = cv2.threshold(graygauss, thresh = self.thresh, maxval=255,
                             type=cv2.THRESH_BINARY_INV)[1]
 
         # cv2.imshow("threshold", im2)

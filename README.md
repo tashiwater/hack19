@@ -47,6 +47,8 @@
 - garden install contextmenu
 - pip install docutils pygments pypiwin32 kivy.deps.sdl2
 - pip install kivy.deps.glew
+- pip install gspread
+- pip install oauth2client
 
 ## Usage
 

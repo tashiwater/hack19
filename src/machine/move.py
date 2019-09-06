@@ -7,7 +7,7 @@ import numpy as np
 
 
 class Move():
-    def __init__(self, data_path, testdata_path, find_parts, box_df, tf2machine, myserial, weight_dist, weight_diff):
+    def __init__(self, data_path, testdata_path, find_parts, box_df, tf2machine, myserial, weight_dist, weight_diff,spreadManager):
         self.find_parts = find_parts
         self.box_df = box_df
 
@@ -20,9 +20,11 @@ class Move():
         self.errs = ["nothing", "no_parts", "something"]
         self.class_result_img = None
         self.target_img = None
+        self.spreadManager = spreadManager
 
-    def no_serial_run(self, solenoid_stock, solenoid_pick):
-        if self.find_parts.get_testdata() is False:
+    def no_serial_run(self, solenoid_stock, solenoid_pick, thresh):
+        print("param", solenoid_stock, solenoid_pick, thresh)
+        if self.find_parts.get_testdata(thresh) is False:
             return self.errs.index("something")
         cv2.waitKey(500)
         if self.match.get_test_data(self.find_parts.get_neji_output()) is False:
@@ -39,7 +41,7 @@ class Move():
         y = self.match.objs[use_obj][1]
         z = self.match.df.head(1)["class_id"]
         self.target_img = self.match.raw_imgs[use_obj]
-        # cv2.imshow("target", self.match.raw_imgs[use_obj])
+        cv2.imwrite(self.find_parts.tempsave_path + "/target.png", self.match.raw_imgs[use_obj])
 
         print("img posi", x, y)
         print("target", self.match.df.head(1))
@@ -53,6 +55,8 @@ class Move():
             to_mbed_z = box.box_x
             to_mbed_w = box.box_y
             solenoid = solenoid_pick
+            print(str(self.match.template_length[id]) + "mm")
+            # self.spreadManager.add(str(self.match.template_length[id]) + "mm")
         else:
             to_mbed_z = pick_place[0]
             to_mbed_w = pick_place[1]
@@ -65,11 +69,11 @@ class Move():
         pub_list.append(solenoid)
         return pub_list
 
-    def run(self, solenoid_stock, solenoid_pick):
+    def run(self, solenoid_stock, solenoid_pick, thresh):
         self.back_str = self.myserial.buffer_read(20)
         if "go" not in self.back_str:
             return self.errs.index("something")
-        int_list = self.no_serial_run(solenoid_stock, solenoid_pick)
+        int_list = self.no_serial_run(solenoid_stock, solenoid_pick,thresh)
         if not isinstance(int_list, list):
             return int_list
         while "wait_target" not in self.myserial.buffer_read(20):

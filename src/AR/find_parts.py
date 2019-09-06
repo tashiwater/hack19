@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-# import rospy
-# from std_srvs.srv import SetBool, SetBoolResponse
-
 import cv2
 import xml.etree.ElementTree as ET
 import os
 
 from AR.contours import Contours
-
-
 class FindParts():
     def __init__(self, testdata_path, tempsave_path,
                  locate_2d, get_frame_func):
@@ -21,9 +16,6 @@ class FindParts():
         self.get_frame_func = get_frame_func
         self.ar_im = None
         print("locate_from_ar setup finish")
-
-    def set_srv(self, find_parts_srv):
-        rospy.Service(find_parts_srv, SetBool, self.srv_callback)
 
     def output_cont(self, output_dir_path):
         max_num = 0
@@ -49,22 +41,14 @@ class FindParts():
             os.mkdir(output_path)
         self.output_cont(output_path)
 
-    def get_testdata(self):
+    def get_testdata(self,thresh):
         if self.capture() is False:
             return False
         self.ar.find_marker()
         if self.get_roi() is False:
             return False
-        self.find_contour()
-        # self.output()
+        self.find_contour(thresh)
         return True
-
-    def srv_callback(self, request):
-        resp = SetBoolResponse()
-        resp.success = self.get_testdata()
-        resp.message = "called. data: " + str(request.data)
-        print(resp.message)
-        return resp
 
     def capture(self):
         # cap=cv2.VideoCapture(1)  # もともとなかった
@@ -84,15 +68,15 @@ class FindParts():
         self.ar_im = self.ar.get_ar_detect_img()
         # small_im = cv2.resize(ar_im, None, fx = 0.5, fy = 0.5)
         # self.show_img("ar", ar_im)
-        cv2.imwrite(self.testdata_path + "/ar.png", self.ar_im)
+        cv2.imwrite(self.tempsave_path + "/ar.png", self.ar_im)
         self.roi_img = self.locate_2d.get_roi_img()
         if self.roi_img is None:
             print("there is no roi img")
             return False
         return True
 
-    def find_contour(self):
-        self.cont = Contours(self.roi_img)
+    def find_contour(self, thresh):
+        self.cont = Contours(self.roi_img, thresh)
         cnt_img = self.cont.find_contours()
         return cnt_img
 

@@ -75,7 +75,7 @@
                         size_hint_x: 2.3
                         size_hint_y: 2.3
                         pos_hint: {"center_x":0.5,"center_y":-19}
-                        source: './gui/robostep.jpg'
+                        source: '../data/gui/robostep.jpg'
                 
                 Label:
                     size_hint_y: 0.3
@@ -86,6 +86,7 @@
                     min: 0
                     max: 255
                     step: 1
+                    value: 100
                     orientation: 'horizontal'
                 Label:
                     size_hint_y: 0.3
@@ -93,8 +94,9 @@
                 Slider:
                     id: slider_pwm
                     min: 0
-                    max: 10
-                    step: 1
+                    max: 1
+                    step: 0.1
+                    value: 0.5
                     orientation: 'horizontal'
                 Label:
                     size_hint_y: 0.3
@@ -173,14 +175,15 @@
             on_press: root.play()
 
 
+
 <BoxConfig>:
     orientation: "horizontal"
     slider_d: slider_d
 
     Button:
         size_hint: 0.2, 0.1
-        center_x: root.center_x - self.width
-        center_y: root.center_y*0.4
+        center_x: root.center_x*2 - self.width
+        center_y: root.center_y*0.2
         text: 'Back'
         on_release:
             root.manager.transition.direction = 'left' 
@@ -209,23 +212,25 @@
             BoxLayout:
                 BoxLayout:
                     Image:
-                        source: './gui/sample1.jpg'
+                        id: image_a
+                        source: '../data/gui/sample1.jpg'
                 BoxLayout:
                     size_hint_x: 0.3
                     orientation: "vertical"
                     Slider:
                         id: slider_a
-                        min: 0
-                        max: 50
+                        min: 5
+                        max: 30
                         step: 5
+                        value: 25
                         orientation: 'vertical'     
                     Label:
                         size_hint_y: 0.3
-                        text: str(slider_a.value)
+                        text: str(int(slider_a.value))
             BoxLayout:
                 size_hint_y: 0.2
                 TextInput:
-                    text:"Hello World"
+                    text:"neji_" + str(int(slider_a.value))
                     size_hint_x:0.3
                     color:1,0,0,1
                     id: text_a
@@ -233,6 +238,7 @@
                 Button:
                     size_hint_x: 0.2
                     text: "ok"
+                    on_release: root.change_image("image_a",text_a.text)
                 Label:
                     size_hint_x: 0.2
                     text: str("length")
@@ -245,24 +251,25 @@
             BoxLayout:
                 BoxLayout:
                     Image:
-                        source: './gui/sample1.jpg'
+                        id: image_b
+                        source: '../data/gui/sample1.jpg'
                 BoxLayout:
                     size_hint_x: 0.3
                     orientation: "vertical"
                     Slider:
                         id: slider_b
-                        min: 0
-                        max: 50
+                        min: 5
+                        max: 30
                         step: 5
                         value: 25
                         orientation: 'vertical'     
                     Label:
                         size_hint_y: 0.3
-                        text: str(slider_b.value)
+                        text: str(int(slider_b.value))
             BoxLayout:
                 size_hint_y: 0.2
                 TextInput:
-                    text:"Hello World"
+                    text:"neji_" + str(int(slider_b.value))
                     size_hint_x:0.3
                     color:1,0,0,1
                     id: text_b
@@ -270,6 +277,7 @@
                 Button:
                     size_hint_x: 0.2
                     text: "ok"
+                    on_release: root.change_image("image_b",text_b.text)
                 Label:
                     size_hint_x: 0.2
                     text: str("length")
@@ -282,24 +290,25 @@
             BoxLayout:
                 BoxLayout:
                     Image:
-                        source: './gui/sample1.jpg'
+                        id: image_c
+                        source: '../data/gui/sample1.jpg'
                 BoxLayout:
                     size_hint_x: 0.3
                     orientation: "vertical"
                     Slider:
                         id: slider_c
-                        min: 0
-                        max: 50
+                        min: 5
+                        max: 30
                         step: 5
                         value: 25
                         orientation: 'vertical'     
                     Label:
                         size_hint_y: 0.3
-                        text: str(slider_c.value)
+                        text: str(int(slider_c.value))
             BoxLayout:
                 size_hint_y: 0.2
                 TextInput:
-                    text:"Hello World"
+                    text: "neji_" + str(int(slider_c.value))
                     size_hint_x:0.3
                     color:1,0,0,1
                     id: text_c
@@ -307,6 +316,7 @@
                 Button:
                     size_hint_x: 0.2
                     text: "ok"
+                    on_release: root.change_image("image_c",text_c.text)
                 Label:
                     size_hint_x: 0.2
                     text: str("length")
@@ -319,24 +329,25 @@
             BoxLayout:
                 BoxLayout:
                     Image:
-                        source: './gui/sample1.jpg'
+                        id: image_d
+                        source: '../data/gui/sample1.jpg'
                 BoxLayout:
                     size_hint_x: 0.3
                     orientation: "vertical"
                     Slider:
                         id: slider_d
-                        min: 0
-                        max: 50
+                        min: 5
+                        max: 30
                         step: 5
                         value: 25
                         orientation: 'vertical'     
                     Label:
                         size_hint_y: 0.3
-                        text: str(slider_d.value)
+                        text: str(int(slider_d.value))
             BoxLayout:
                 size_hint_y: 0.2
                 TextInput:
-                    text:"Hello World"
+                    text: "neji_" + str(int(slider_d.value))
                     size_hint_x:0.3
                     color:1,0,0,1
                     id: text_d
@@ -344,6 +355,7 @@
                 Button:
                     size_hint_x: 0.2
                     text: "ok"
+                    on_release: root.change_image("image_d",text_d.text)
                 Label:
                     size_hint_x: 0.2
                     text: str("length")

@@ -11,9 +11,9 @@ class BoxConfig(Screen, BoxLayout):
         super(BoxConfig, self).__init__(**kwargs)
         current_path = os.path.dirname(os.path.abspath(__file__))
         data_path = current_path + "/../../data"
+        self.neji_template_img_path = data_path + "/gui/neji"
         self.box_list_path = data_path + "/box_list.csv"
         box_df = pd.read_csv(self.box_list_path, header=0)
-        # print(box_df[0])
         self.ids.text_a.text = box_df.name[0]
         self.ids.text_b.text = box_df.name[1]
         self.ids.text_c.text = box_df.name[2]
@@ -56,3 +56,11 @@ class BoxConfig(Screen, BoxLayout):
         print("D_parts")
         print("name: " + str(self.ids.text_d.text))
         print("length: " + str(self.ids.slider_d.value))
+    
+    def change_image(self, id, path):
+        change_id = self.ids[id]
+        print(self.neji_template_img_path + path + ".jpg")
+        change_id.source = self.neji_template_img_path + "/" + path + ".jpg"
+        print(path)
+        print(id)
+        print(change_id.source)

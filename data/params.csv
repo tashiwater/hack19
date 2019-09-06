@@ -1,0 +1,4 @@
+gray_threshold,100
+solenoid_duty_big,0.3
+solenoid_duty_small,0.2
+slack_on,0
