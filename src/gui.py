@@ -77,12 +77,12 @@ class StartMenu(Screen):
         box_list_path = data_path + "/box_list.csv"
         self.param_path = data_path + "/params.csv"
         self.gui_path = data_path + "/gui"
-        
+        self.sozai_path = self.gui_path + "/sozai"
+        self.spread_url = data_path + '/PartsList-8533077dcf0f.json'
+        self.spread_name = 'PartsList'
         #通信関係ONOFF
-        self.serial_on = 1
-        self.slack_on = 0
-        self.spreadManager = SpreadManager('PartsList',data_path + '/PartsList-8533077dcf0f.json')
-        # self.spreadManager = None
+        self.serial_on = True
+        self.spreadManager = None
 
         self.param_df = pd.read_csv(self.param_path, header=None, index_col=0)
         self.ids.slider_speed.value = float(self.param_df.loc["solenoid_duty_small",1])
@@ -90,8 +90,6 @@ class StartMenu(Screen):
         self.ids.slider_gray.value = int(self.param_df.loc["gray_threshold",1])
         print(self.param_df)
         print("type", type(self.param_df))
-        # self.ids.slider_gray.value = self.param_df.loc["gray_threshold"]
-        # self.ids.slider_pwm.value = self.param_df.loc["solenoid_duty_big"]
 
 
         # ARマーカー検出用クラス
@@ -140,9 +138,20 @@ class StartMenu(Screen):
         self.weight_dist = 1
         self.weight_diff = 100
         self.myserial = MySerial()
-        self.wifi_ok = 0
+        self.wifi_ok = False
+        self.slack_on = False
+        self.googlesheet_on = False
+        self.line_on = False
         Clock.schedule_interval(self.check_Wi_Fi, 10)
-        self.is_playing = True
+        self.is_playing = False
+        self.wifi_icon_path = [self.sozai_path + "/Network_ON_Color.png",
+                                self.sozai_path + "/Network_OFF_.png"]
+        self.slack_icon_path = [self.sozai_path + "/Slack_ON.png"
+                                ,self.sozai_path + "/Slack_OFF_.png"]
+        self.googlesheet_icon_path = [self.sozai_path + "/GoogleSheet_ON_Color.png",
+                                self.sozai_path + "/GoogleSheet_OFF_.png"]
+        self.line_icon_path = [self.sozai_path + "/LINE_ON_Color.png",
+                                self.sozai_path + "/LINE_OFF_.png"]
 
     def emergency_button_on(self):
         self.is_playing = not self.is_playing
@@ -150,28 +159,32 @@ class StartMenu(Screen):
             self.play()
         else:
             self.stop()
-        
+    
+    
 
 
     def check_Wi_Fi(self, dt):
-        try:
-            urllib.request.urlopen(url='https://robostep.sakura.ne.jp/', timeout=1)
-        except Exception as e:
-            print(e)
-            self.wifi_ok = 0
-        else:
-            self.wifi_ok = 1
+        # try:
+        #     urllib.request.urlopen(url='https://www.google.com/', timeout=1)
+        # except Exception as e:
+        #     print(e)
+        #     self.wifi_ok = 0
+        # else:
+        #     self.wifi_ok = 1
         if self.wifi_ok:
-            self.ids.wifi.source =  self.gui_path + "/robostep.jpg"
+            print("wifi connect")
+            self.ids.wifi_icon.source =  self.wifi_icon_path[0]
         else:
-            self.ids.wifi.source =  self.gui_path + "/sample1.jpg"
-            
+            print("wifi false")
+            self.ids.wifi_icon.source =  self.wifi_icon_path[1]
+            self.ids.slack_icon.source = self.slack_icon_path[1]
+            self.ids.line_icon.source = self.line_icon_path[1]
+            self.ids.googlesheet_icon.source = self.googlesheet_icon_path[1]
         
     
     def say_hello(self, text):
         self.ids.select_number.id = text.id
-        self.ids.com.color = 0, 1, 0, 1
-        self.ids.com.text = "         COM:" + str(text.id)
+        self.ids.port_name.text = "COM:" + str(text.id)
 
     def add_text(self, com):
         self.add = ContextMenuTextItem(text=str(com), id=str(com.device))
@@ -205,30 +218,53 @@ class StartMenu(Screen):
     def stop(self):
         self.is_playing = False
         Clock.unschedule(self.update)
+        print("stop")
+
     def show_spreadsheet(self):
-        if self.wifi_ok == 0:
+        if self.wifi_ok is False:
             return
         webbrowser.open(url="https://docs.google.com/spreadsheets/d/1wosAqe5n1EqrKXIEBkkgfs7rNXQ8HIOxru3Pt8eQRzs/edit#gid=0")
 
-    def slack_func(self):
-        
-        pass
+    def slack_button_down(self):
+        if self.wifi_ok is False:
+            return
+        self.slack_on = not self.slack_on
+        if self.slack_on:
+            print("slack on")
+            self.ids.slack_icon = self.slack_icon_path[0]
+        else:
+            self.ids.slack_icon = self.slack_icon_path[1]
+    
+    def googlesheet_down(self):
+        if self.wifi_ok is False:
+            return
+        self.googlesheet_on = not self.googlesheet_on
+        if self.googlesheet_on:
+            self.show_spreadsheet()
+            self.ids.googlesheet_icon = self.googlesheet_icon_path[0]
+        else:
+            self.ids.googlesheet_icon = self.googlesheet_icon_path[1]
 
     image_texture = ObjectProperty(None)
     image_capture = ObjectProperty(None)
 
     def play(self):
-
         print("play")
         if self.serial_on:
             if self.myserial.init_port(self.ids.select_number.id) is False:
                 return
             self.myserial.mbed_reset()
+        
         self.box_df = pd.read_csv(self.box_list_path, header=0)
+
+        if self.googlesheet_on:
+            self.spreadManager = SpreadManager(self.spread_name, self.spread_url)
+        else:
+            self.spreadManager = None
         self.move = Move(self.data_path, self.testdata_path, self.find_parts,
                          self.box_df, self.tf2machine, self.myserial, self.weight_dist, self.weight_diff,self.spreadManager)
         
-        Clock.schedule_interval(self.update, 2.0)
+        Clock.schedule_interval(self.update, 5.0)
         #    self.image_capture.release()
 
     def add_img(self, frame, camera_name):
@@ -260,16 +296,27 @@ class StartMenu(Screen):
             if self.move.errs[err] == "no_parts":
                 # pass
                 print("err in ")
-                # if self.param_df.loc["slack_on",1]:
-                #     print("slack")
-                #     self.slack_bot.send("finish parts sort",
-                #                         "finish", self.find_parts.tempsave_path + "/ar.png")
+                if self.slack_on:
+                    print("slack")
+                    # self.slack_bot.send("finish parts sort",
+                    #                     "finish", self.find_parts.tempsave_path + "/ar.png")
                 print("finish")
                 self.stop()
-        self.add_img(self.move.find_parts.ar_im, "camera_1")
-        self.add_img(self.move.class_result_img, "camera_2")
-        self.add_img(self.move.target_img, "camera_3")
-
+        self.add_img(self.move.find_parts.ar_im, "ar_img")
+        self.add_img(self.move.class_result_img, "roi_img")
+        self.add_img(self.move.target_img, "target_img")
+    
+    def threshold_test(self):
+        self.spreadManager = None
+        self.box_df = pd.read_csv(self.box_list_path, header=0)
+        self.move = Move(self.data_path, self.testdata_path, self.find_parts,
+                         self.box_df, self.tf2machine, self.myserial, self.weight_dist, self.weight_diff,self.spreadManager)
+        err = self.move.no_serial_run(self.param_df.loc["solenoid_duty_big",1], 
+            self.param_df.loc["solenoid_duty_small",1],
+            self.param_df.loc["gray_threshold",1])
+        if isinstance(err, list):
+            self.add_img(self.move.find_parts.ar_im, "ar_img")
+            self.add_img(self.move.class_result_img, "roi_img")
 
 class PartsSorterApp(App):
     def build(self):

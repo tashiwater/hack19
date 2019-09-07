@@ -24,7 +24,8 @@
             - learn.py : モデル作成用
             - Object.py : xml読み取り
         - move.py : 機体に一連の動作をさせ、ねじの仕分けを実行する
-        - neji_matching.py : 対角線の長さによる分別 
+        - neji_matching.py : 対角線の長さによる分別
+        - pickselector.py : ネジの先端、終端からもっとも画像内で遠い点を選ぶ
     - communicate : 通信関連
         - serial_to_mbed.py
         - slack.py

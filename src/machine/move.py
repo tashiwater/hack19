@@ -21,17 +21,27 @@ class Move():
         self.class_result_img = None
         self.target_img = None
         self.spreadManager = spreadManager
+        self.separate_x_m = 0.120
 
     def no_serial_run(self, solenoid_stock, solenoid_pick, thresh):
         print("param", solenoid_stock, solenoid_pick, thresh)
         if self.find_parts.get_testdata(thresh) is False:
             return self.errs.index("something")
         cv2.waitKey(500)
-        if self.match.get_test_data(self.find_parts.get_neji_output()) is False:
+        neji = self.find_parts.get_neji_output()
+        new_neji = []
+        for i, lis in enumerate(neji):
+            if lis[1][0] < self.separate_x_m:
+                new_neji.append(lis)
+            else:
+                new_neji.append(self.find_parts.calc_born(lis[2], lis[3]))
+
+        if self.match.get_test_data(new_neji) is False:
             return self.errs.index("no_parts")
         self.match.predict()
-        self.class_result_img = self.paint(self.find_parts.cont.size_list,
-                                           self.match, self.find_parts.roi_img)
+        corners_px = self.match.corners_px
+        # corners = self.find_parts.cont.size_list
+        self.class_result_img = self.paint(corners_px, self.match, self.find_parts.roi_img)
 
         self.FindStock()
 
@@ -84,18 +94,20 @@ class Move():
         return self.errs.index("nothing")
 
     def FindStock(self):
-        separate_x_m = 0.120
-        self.match.df["is_stock"] = 0
         for i in range(len(self.match.df)):
-            if self.match.objs[i][0] < separate_x_m:
+            if self.match.df.loc[i,"posi_x"] < self.separate_x_m:
                 self.match.df.loc[i, "is_stock"] = 1
+            else:
+                self.match.df.loc[i, "is_stock"] = 0
         self.match.df.sort_values(
             ascending=True, inplace=True, by=["is_stock", "score"])
 
     def paint(self, cont_list, match, roi_img):
         show = roi_img.copy()
-        for index, row in match.df.iterrows():
+        reversed_df = match.df.sort_values(
+            ascending=False, by=["score"])
 
+        for index, row in reversed_df.iterrows():
             clas = int(row["class_id"])
             bgr = np.asarray(
                 [match.box_df.color_b[clas], match.box_df.color_g[clas], match.box_df.color_r[clas]])

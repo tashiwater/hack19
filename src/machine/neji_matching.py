@@ -18,32 +18,40 @@ class NejiMatch():
         self.diagonal = []
         if len(get_neji_output) < 1:
             return False
-        for length, posi, img in get_neji_output:
+        self.corners_px = []
+        for lis in get_neji_output:
+            length = lis[0]
+            posi = lis[1]
+            img = lis[2]
             self.objs.append([posi[0], posi[1]])
             self.raw_imgs.append(img)
             self.diagonal.append(length)
+            self.corners_px.append(lis[3])
         self.objs = np.asarray(self.objs)
         return True
 
     def predict(self):
         # print("self.diagonal", self.diagonal)
         self.df = pd.DataFrame(
-            columns=["class_id", "diff_to_template", "length", "dist", "score"])
+            columns=["class_id", "diff_to_template", "length", "dist", "score", "posi_x", "posi_y", "is_stock"])
 
         # print("self.diagonal", self.diagonal)
         for length in self.diagonal:
             diff_to_template = abs(self.template_length - length * 1000 + 3)
             self.df = self.df.append(
-                pd.Series([diff_to_template.idxmin(), diff_to_template.min(), length, 10000, 10000],
+                pd.Series([diff_to_template.idxmin(), diff_to_template.min(), length, 10000, 10000, 0,0,0],
                           index=self.df.columns), ignore_index=True)
         print("self.template_length2", self.template_length )
         for index in range(len(self.df)):
             posi = self.objs[index]
+            self.df.loc[index,"posi_x"] = posi[0]
+            self.df.loc[ index,"posi_y"] = posi[1]
             for i, obj in enumerate(self.objs):
                 if i == index:
                     continue
                 dist = np.linalg.norm(posi - obj)
                 # dist = 0
+
                 if dist < self.df.dist[index]:
                     self.df.dist[index] = dist
             # self.df.score[index] = self.df.diff_to_template[index]

@@ -1,3 +1,3 @@
-solenoid_duty_small,0.3
-solenoid_duty_big,0.6
-gray_threshold,109.0
+solenoid_duty_small,0.4
+solenoid_duty_big,0.5
+gray_threshold,114.0

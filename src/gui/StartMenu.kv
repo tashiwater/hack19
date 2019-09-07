@@ -6,7 +6,7 @@
         BorderImage:
             # BorderImage behaves like the CSS BorderImage
             border: 10, 10, 10, 10
-            source: './gui/sozai/back.jpg'
+            source:  gui_path + '/sozai/back.jpg'
             pos: self.pos
             size: self.size
 
@@ -25,9 +25,9 @@
                     size: self.size
             AppMenuTextItem:
                 text: "     "
-                background_nomal: './gui/sozai/BG_yellow.jpg'
-                background_down: './gui/sozai/BG_yellow.jpg'
-                background_up: './gui/sozai/BG_yellow.jpg'
+                background_nomal: gui_path + '/sozai/BG_yellow.jpg'
+                background_down: gui_path + '/sozai/BG_yellow.jpg'
+                background_up: gui_path + '/sozai/BG_yellow.jpg'
                 background_color: 1, .753, 0
                 size_hint_y: 1
                 font_size: 34
@@ -72,7 +72,7 @@
                 Label:
                     size_hint_y: 1
                     font_size: 32
-                    font_name: "./gui/font/arialbd.ttf"
+                    font_name: gui_path + "/font/arialbd.ttf"
                     text: "Paramerter"
                 BoxLayout:
                     size_hint_y: 0.1
@@ -81,11 +81,11 @@
                 BoxLayout:
                     canvas.before:
                         BorderImage:
-                            source: './gui/sozai/BG_yellow.jpg'
+                            source: gui_path + '/sozai/BG_yellow.jpg'
                             pos: self.pos
                             size: self.size
                     Label:
-                        font_name: "./gui/font/arialbd.ttf"
+                        font_name: gui_path + "/font/arialbd.ttf"
                         text: "Gray Threshold"
                         font_size: 24
                         color: 255,255,255,1
@@ -101,6 +101,7 @@
                         orientation: 'horizontal'
                         on_touch_up:
                             root.param_save()
+                            root.threshold_test()
                     Label:
                         size_hint_y: 1
                         size_hint_x: 0.2
@@ -114,12 +115,12 @@
                 BoxLayout:
                     canvas.before:
                         BorderImage:
-                            source: './gui/sozai/BG_yellow.jpg'
+                            source: gui_path + '/sozai/BG_yellow.jpg'
                             pos: self.pos
                             size: self.size
                     Label:
-                        font_name: "./gui/font/arialbd.ttf"
-                        text: "Magnetic Force \n for Ceparation"
+                        font_name: gui_path + "/font/arialbd.ttf"
+                        text: "Magnetic Force \n for Picking"
                         font_size: 24
                         color: 255,255,255,1
                 BoxLayout:
@@ -146,12 +147,12 @@
                 BoxLayout:
                     canvas.before:
                         BorderImage:
-                            source: './gui/sozai/BG_yellow.jpg'
+                            source: gui_path + '/sozai/BG_yellow.jpg'
                             pos: self.pos
                             size: self.size
                     Label:
-                        font_name: "./gui/font/arialbd.ttf"
-                        text: "Magnetic Force \n for Picking"
+                        font_name: gui_path + "/font/arialbd.ttf"
+                        text: "Magnetic Force \n for Ceparation"
                         font_size: 24
                         color: 255,255,255,1
                 BoxLayout:
@@ -180,18 +181,18 @@
     FloatLayout:
         canvas.before:
             BorderImage:
-                source: './gui/sozai/BG_yellow.jpg'
+                source: gui_path + '/sozai/BG_yellow.jpg'
                 pos: 0,650-65
                 size: 150,65
         Image:
-            source: "./gui/sozai/MenuButton.png"
+            source: gui_path + "/sozai/MenuButton.png"
             size_hint: None, None
             size: 50, 50
             pos_hint: {'x': 0.02, 'y': 0.91}
 
     FloatLayout:
         Label:
-            font_name: "./gui/font/arial.ttf"
+            font_name: gui_path + "/font/arial.ttf"
             text: "START / STOP"
             font_size: 24
             color: 255,255,255,1
@@ -206,17 +207,18 @@
                 origin: root.center
         canvas.after:
             PopMatrix
+        on_touch_down:
+            # root.emergency_button_on()
         Image:
-            source: "./gui/sozai/EmergencySwitch.png"
+            source: gui_path + "/sozai/EmergencySwitch.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.8, 'y': 0.08}
-        on_touch_down:
-            root.play()
+
 
     FloatLayout:
         Image:
-            source: "./gui/sozai/DCHackLogo.png"
+            source: gui_path + "/sozai/DCHackLogo.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.85, 'y': 0.83}
@@ -231,64 +233,103 @@
         canvas.after:
             PopMatrix
         Image:
-            source: "./gui/sozai/hackathon.png"
+            source: gui_path + "/sozai/hackathon.png"
             size_hint: None, None
             size: 30, 30
             pos_hint: {'x': 0.914, 'y': 0.934}
 
     FloatLayout:
         Image:
-            source: "./gui/sozai/Network_ON_Color.png"
+            id: wifi_icon
+            source: gui_path + "/sozai/Network_ON_Color.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.75, 'y': 0.83}
-
+        
     FloatLayout:
+        on_touch_down:
+            root.slack_button_down()
+
         Image:
-            source: "./gui/sozai/Slack_ON_Color.png"
+            id: slack_icon
+            source: gui_path + "/sozai/Slack_ON_Color.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.7, 'y': 0.83}
-
+        
     FloatLayout:
         Image:
-            source: "./gui/sozai/LINE_ON_Color.png"
+            id: line_icon
+            source: gui_path + "/sozai/LINE_ON_Color.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.65, 'y': 0.83}
+        # on_touch_down:
+        #     root.line_button_down()
 
     FloatLayout:
+        on_touch_down:
+            root.googlesheet_down()
         Image:
-            source: "./gui/sozai/GoogleSheet_ON_Color.png"
+            id: googlesheet_icon
+            source: gui_path + "/sozai/GoogleSheet_ON_Color.png"
             size_hint: None, None
             size: 150, 150
             pos_hint: {'x': 0.6, 'y': 0.83}
 
+
+
     FloatLayout:
         Label:
-            font_name: "./gui/font/arialbd.ttf"
+            id: port_name
+            font_name: gui_path + "/font/arialbd.ttf"
             text: "COM:"
             font_size: 24
             color: 255,255,255,1
             pos: 0, 290
 
-    FloatLayout:
-        canvas.before:
-            BorderImage:
-                source: './gui/sozai/BG_yellow.jpg'
-                pos: 660-264*1.8/2,150-154*1.8/2
-                size: 264*1.8,154*1.8
+    # FloatLayout:
+    #     canvas.before:
+    #         BorderImage:
+    #             source: gui_path + '/sozai/BG_yellow.jpg'
+    #             pos: 660-264*1.8/2,150-154*1.8/2
+    #             size: 264*1.8,154*1.8
+
+    # FloatLayout:
+    #     canvas.before:
+    #         BorderImage:
+    #             source: gui_path + '/sozai/BG_yellow.jpg'
+    #             pos: 980-154*1.8/2,450-154
+    #             size: 154*1.8,154*1.8
 
     FloatLayout:
-        canvas.before:
-            BorderImage:
-                source: './gui/sozai/BG_yellow.jpg'
-                pos: 980-154*1.8/2,450-154
-                size: 154*1.8,154*1.8
+        orientation: "vertical"
+                # padding: 0
+                # spacing: 1
+                # size_hint: 1, 0.1
+        Image:
+            pos: 640-264*1.8/2,150-154*1.8/2
+            id: ar_img
+            size_hint: None, None
+            size: 264*1.8,154*1.8
+            source: gui_path + '/sozai/BG_yellow.jpg'
 
     FloatLayout:
-        canvas.before:
-            BorderImage:
-                source: './gui/sozai/BG_yellow.jpg'
-                pos: 680-224,450-154
-                size: 184*1.8,154*1.8
+        orientation: "vertical"
+        Image:
+            id: roi_img
+            size_hint: None, None
+            size: 184*1.8,154*1.8
+            pos: 660-224,450-154
+            source: gui_path + '/sozai/BG_yellow.jpg'
+    
+    FloatLayout:
+        orientation: "vertical"
+        Image:
+            id: target_img
+            size_hint: None, None
+            size: 154*1.8,154*1.8
+            pos: 1120-154*1.8/2,450-154
+            source: gui_path + '/sozai/BG_yellow.jpg'
+
+    

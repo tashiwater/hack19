@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import os
 
 from AR.contours import Contours
+from AR.borndevider import BornDevider
 class FindParts():
     def __init__(self, testdata_path, tempsave_path,
                  locate_2d, get_frame_func):
@@ -49,6 +50,8 @@ class FindParts():
             return False
         self.find_contour(thresh)
         return True
+
+
 
     def capture(self):
         # cap=cv2.VideoCapture(1)  # もともとなかった
@@ -126,9 +129,34 @@ class FindParts():
         ret = []
         for px in self.cont.get_diagonal_px():
             temp = [px, 0]
-            lenght = self.locate_2d.pred_posi_in_roi(temp)[0]
-            ret.append(lenght)
+            length = self.locate_2d.pred_posi_in_roi(temp)[0]
+            ret.append(length)
         return ret
 
     def get_neji_output(self):
-        return [[length, self.locate_2d.pred_posi_in_roi(at), img] for length, at, img in zip(self.get_diagonal_mm(), self.cont.get_at(), self.cont.show_cont())]
+        return [[length, self.locate_2d.pred_posi_in_roi(at), img, corner_px] for length, at, img, corner_px in zip(self.get_diagonal_mm(), self.cont.get_at(), self.cont.show_cont(), self.cont.size_list)]
+
+    def calc_born(self, img, corner_px):
+        ret = []
+        born = BornDevider()
+        for length_px, x,y in born.inputImage(img):
+            temp = [length_px, 0]
+            length_mm = self.locate_2d.pred_posi_in_roi(temp)[0]
+            print("x , corner_px[0], y,corner_px[2]",x , corner_px[0], y,corner_px[2])
+            posi = self.locate_2d.pred_posi_in_roi([x + corner_px[0], y+ corner_px[2]])
+            ret.append([length_mm, posi, img, corner_px])
+        return ret
+
+    def get_neji_output_with_born(self):
+        ret = []
+        
+        for corner_px, img in zip(self.cont.size_list,  self.cont.show_cont()):
+            born = BornDevider()
+            for length_px, x,y in born.inputImage(img):
+                temp = [length_px, 0]
+                length_mm = self.locate_2d.pred_posi_in_roi(temp)[0]
+                print("x , corner_px[0], y,corner_px[2]",x , corner_px[0], y,corner_px[2])
+                posi = self.locate_2d.pred_posi_in_roi([x + corner_px[0], y+ corner_px[2]])
+                ret.append([length_mm, posi, img, corner_px])
+        return ret
+
