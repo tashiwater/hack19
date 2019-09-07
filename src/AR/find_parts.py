@@ -139,7 +139,8 @@ class FindParts():
     def calc_born(self, img, corner_px):
         ret = []
         born = BornDevider()
-        for length_px, x,y in born.inputImage(img):
+        lis = born.inputImage(img)
+        for length_px, x,y in lis:
             temp = [length_px, 0]
             length_mm = self.locate_2d.pred_posi_in_roi(temp)[0]
             print("x , corner_px[0], y,corner_px[2]",x , corner_px[0], y,corner_px[2])

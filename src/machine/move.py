@@ -36,7 +36,7 @@ class Move():
             else:
                 new_neji.append(self.find_parts.calc_born(lis[2], lis[3]))
 
-        if self.match.get_test_data(new_neji) is False:
+        if self.match.get_test_data(neji) is False:
             return self.errs.index("no_parts")
         self.match.predict()
         corners_px = self.match.corners_px

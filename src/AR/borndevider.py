@@ -13,9 +13,7 @@ colorList = ['yellowgreen','gold','blue','pink','red','black','blown']
 
 class BornDevider():
     def inputImage(self,img):
-        cv2.imshow("raw",img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+       
         bin_ = self.binarization(img)
         skel = self.getSkelton(bin_)
         self.img = skel
@@ -31,7 +29,7 @@ class BornDevider():
         ret3,th3 = cv2.threshold(blur,100,255,cv2.THRESH_BINARY)
         #print(cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         reversed = cv2.bitwise_not(th3)
-
+        
         return reversed
     
     def getSkelton(self,img):
@@ -51,6 +49,8 @@ class BornDevider():
             zeros = size - cv2.countNonZero(img)
             if zeros==size:
                 done = True
+        
+
         return skel
 
     def imageToPoints(self,img):
@@ -67,6 +67,7 @@ class BornDevider():
         y = np.array(y_list)
         raw_X = X.reshape(-1,1)
         raw_y = y.reshape(-1,1)
+        
         return raw_X, raw_y
 
     def lineRANSAC(self, X, y, minPointNum):
@@ -75,7 +76,7 @@ class BornDevider():
         coefficient = []
         while len(X) > minPointNum:
             # Robustly fit linear model with RANSAC algorithm
-            ransac = linear_model.RANSACRegressor()
+            ransac = linear_model.RANSACRegressor(max_trials=100)
             ransac.fit(X, y)
             inlier_mask = ransac.inlier_mask_
             outlier_mask = np.logical_not(inlier_mask)
@@ -87,7 +88,7 @@ class BornDevider():
             coefficient.append([a,b])
             X = X[outlier_mask]
             y = y[outlier_mask]
-        #print(self.coefficient)
+        print("coefficient", coefficient)
         return inlier_X, inlier_y, coefficient
         
 
@@ -126,7 +127,7 @@ class BornDevider():
         send_data = []
         for i in range(n):
             send_data.append([length[i], pick_points[i][0][0],pick_points[i][1][0]])  
-        #print("send_data is",send_data)
+        # print("send_data is",send_data)
         return send_data
             
     def dispPoints(self):
