@@ -48,7 +48,7 @@ class Move():
 
         to_mbed_x, to_mbed_y = self.tf2machine.get_xy_mm(x, y)
 
-        pick_place = [100, 20]
+        pick_place = [160, 20]
         if self.match.df.is_stock[use_obj] == 0:
             id = int(z)
             box = self.box_df.iloc[id]
@@ -56,7 +56,8 @@ class Move():
             to_mbed_w = box.box_y
             solenoid = solenoid_pick
             print(str(self.match.template_length[id]) + "mm")
-            # self.spreadManager.add(str(self.match.template_length[id]) + "mm")
+            if self.spreadManager is not None:
+                self.spreadManager.add(str(self.match.template_length[id]) + "mm")
         else:
             to_mbed_z = pick_place[0]
             to_mbed_w = pick_place[1]
@@ -83,7 +84,7 @@ class Move():
         return self.errs.index("nothing")
 
     def FindStock(self):
-        separate_x_m = 0.1
+        separate_x_m = 0.120
         self.match.df["is_stock"] = 0
         for i in range(len(self.match.df)):
             if self.match.objs[i][0] < separate_x_m:

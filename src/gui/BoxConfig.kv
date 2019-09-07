@@ -1,0 +1,184 @@
+<BoxConfig>:
+    orientation: "horizontal"
+    slider_d: slider_d
+
+    Button:
+        size_hint: 0.2, 0.1
+        center_x: root.center_x*2 - self.width
+        center_y: root.center_y*0.2
+        text: 'Back'
+        on_release:
+            root.manager.transition.direction = 'left' 
+            root.manager.current = 'start'
+
+    Button:
+        size_hint: 0.2, 0.1
+        id: fin
+        center_x: root.center_x*2 - self.width
+        center_y: root.center_y*0.4
+        text: 'Finish'  
+        on_release:
+            root.save()  
+
+    BoxLayout:
+        center_y: root.center_y
+        size_hint_x: 1
+        size_hint_y: 0.4
+        orientation: "horizontal"
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                font_size: 24
+                size_hint_y: 0.3
+                text: str("A_parts")
+            BoxLayout:
+                BoxLayout:
+                    Image:
+                        id: image_a
+                        source: None
+                        # '../data/gui/sample1.jpg'
+                BoxLayout:
+                    size_hint_x: 0.3
+                    orientation: "vertical"
+                    Slider:
+                        id: slider_a
+                        min: 5
+                        max: 30
+                        step: 5
+                        value: 25
+                        orientation: 'vertical'     
+                    Label:
+                        size_hint_y: 0.3
+                        text: str(int(slider_a.value))
+            BoxLayout:
+                size_hint_y: 0.2
+                TextInput:
+                    text:"neji_" + str(int(slider_a.value))
+                    size_hint_x:0.3
+                    color:1,0,0,1
+                    id: text_a
+                    multiline: False
+                Button:
+                    size_hint_x: 0.2
+                    text: "ok"
+                    on_release: root.change_image("image_a",text_a.text)
+                Label:
+                    size_hint_x: 0.2
+                    text: str("length")
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                font_size: 24
+                size_hint_y: 0.3
+                text: str("B_parts")
+            BoxLayout:
+                BoxLayout:
+                    Image:
+                        id: image_b
+                        source: '../data/gui/sample1.jpg'
+                BoxLayout:
+                    size_hint_x: 0.3
+                    orientation: "vertical"
+                    Slider:
+                        id: slider_b
+                        min: 5
+                        max: 30
+                        step: 5
+                        value: 25
+                        orientation: 'vertical'     
+                    Label:
+                        size_hint_y: 0.3
+                        text: str(int(slider_b.value))
+            BoxLayout:
+                size_hint_y: 0.2
+                TextInput:
+                    text:"neji_" + str(int(slider_b.value))
+                    size_hint_x:0.3
+                    color:1,0,0,1
+                    id: text_b
+                    multiline: False
+                Button:
+                    size_hint_x: 0.2
+                    text: "ok"
+                    on_release: root.change_image("image_b",text_b.text)
+                Label:
+                    size_hint_x: 0.2
+                    text: str("length")
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                font_size: 24
+                size_hint_y: 0.3
+                text: str("C_parts")
+            BoxLayout:
+                BoxLayout:
+                    Image:
+                        id: image_c
+                        source: '../data/gui/sample1.jpg'
+                BoxLayout:
+                    size_hint_x: 0.3
+                    orientation: "vertical"
+                    Slider:
+                        id: slider_c
+                        min: 5
+                        max: 30
+                        step: 5
+                        value: 25
+                        orientation: 'vertical'     
+                    Label:
+                        size_hint_y: 0.3
+                        text: str(int(slider_c.value))
+            BoxLayout:
+                size_hint_y: 0.2
+                TextInput:
+                    text: "neji_" + str(int(slider_c.value))
+                    size_hint_x:0.3
+                    color:1,0,0,1
+                    id: text_c
+                    multiline: False
+                Button:
+                    size_hint_x: 0.2
+                    text: "ok"
+                    on_release: root.change_image("image_c",text_c.text)
+                Label:
+                    size_hint_x: 0.2
+                    text: str("length")
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                font_size: 24
+                size_hint_y: 0.3
+                text: str("D_parts")
+            BoxLayout:
+                BoxLayout:
+                    Image:
+                        id: image_d
+                        source: '../data/gui/sample1.jpg'
+                BoxLayout:
+                    size_hint_x: 0.3
+                    orientation: "vertical"
+                    Slider:
+                        id: slider_d
+                        min: 5
+                        max: 30
+                        step: 5
+                        value: 25
+                        orientation: 'vertical'     
+                    Label:
+                        size_hint_y: 0.3
+                        text: str(int(slider_d.value))
+            BoxLayout:
+                size_hint_y: 0.2
+                TextInput:
+                    text: "neji_" + str(int(slider_d.value))
+                    size_hint_x:0.3
+                    color:1,0,0,1
+                    id: text_d
+                    multiline: False
+                Button:
+                    size_hint_x: 0.2
+                    text: "ok"
+                    on_release: root.change_image("image_d",text_d.text)
+                Label:
+                    size_hint_x: 0.2
+                    text: str("length")

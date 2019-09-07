@@ -6,12 +6,10 @@ import os
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-data_path = current_path + "/../data"
-config_path = data_path + "/gui/config.ini"
+config_path = current_path + "/gui/config.ini"
 Config.read(config_path)
 
 import kivy
-from gui.box_config import BoxConfig
 from kivy.garden.contextmenu import ContextMenuTextItem
 import kivy.garden.contextmenu
 from kivy.lang import Builder
@@ -28,6 +26,7 @@ from kivy.properties import NumericProperty, ReferenceListProperty,\
     ObjectProperty, StringProperty, OptionProperty
 from kivy.uix.widget import Widget
 from kivy.app import App
+
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -37,6 +36,10 @@ import serial
 import pandas as pd
 from cv2 import aruco
 import signal
+from decimal import Decimal, ROUND_HALF_UP
+import urllib.request, urllib.error
+import webbrowser
+
 from AR.ar_detect import ARDetect
 from AR.locate2d import Locate2d
 from AR.find_parts import FindParts
@@ -45,7 +48,10 @@ from communicate.serial_to_mbed import MySerial
 from communicate.slack import SlackBot
 from machine.move import Move
 from json_scp.gspread_change import SpreadManager
+from gui.box_config import BoxConfig
 
+Builder.load_file(current_path + '/gui/StartMenu.kv')
+Builder.load_file(current_path + '/gui/BoxConfig.kv')
 kivy.require('1.1.1')
 
 resource_add_path("C:\Windows\Fonts")
@@ -62,16 +68,26 @@ class StartMenu(Screen):
         super(StartMenu, self).__init__(**kwargs)
         # ctr-Cで消せるようにする
         signal.signal(signal.SIGINT, signal.SIG_DFL)
-        self.serial_on = 1
-        # path
         
+        # path
+        data_path = current_path + "/../data"
         camera_info_path = data_path + "/camera_info"
         testdata_path = data_path + "/test"
         tempsave_path = data_path + "/temp"
         box_list_path = data_path + "/box_list.csv"
-        param_path = data_path + "/params.csv"
+        self.param_path = data_path + "/params.csv"
+        self.gui_path = data_path + "/gui"
+        
+        #通信関係ONOFF
+        self.serial_on = 1
+        self.slack_on = 0
+        self.spreadManager = SpreadManager('PartsList',data_path + '/PartsList-8533077dcf0f.json')
+        # self.spreadManager = None
 
-        self.param_df = pd.read_csv(param_path, header=None, index_col=0)
+        self.param_df = pd.read_csv(self.param_path, header=None, index_col=0)
+        self.ids.slider_speed.value = float(self.param_df.loc["solenoid_duty_small",1])
+        self.ids.slider_pwm.value = float(self.param_df.loc["solenoid_duty_big",1])
+        self.ids.slider_gray.value = int(self.param_df.loc["gray_threshold",1])
         print(self.param_df)
         print("type", type(self.param_df))
         # self.ids.slider_gray.value = self.param_df.loc["gray_threshold"]
@@ -114,7 +130,7 @@ class StartMenu(Screen):
 
         token = "xoxb-747399510036-750051690710-f4DUOcItFO9geAZySmdCsZm4"  # 取得したトークン
         channel = "CMZRH5VR6"  # チャンネルID
-        self.spreadManager = SpreadManager('PartsList',data_path + '/PartsList-8533077dcf0f.json')
+        
         self.slack_bot = SlackBot(token, channel)
         self.data_path = data_path
         self.testdata_path = testdata_path
@@ -124,7 +140,34 @@ class StartMenu(Screen):
         self.weight_dist = 1
         self.weight_diff = 100
         self.myserial = MySerial()
+        self.wifi_ok = 0
+        Clock.schedule_interval(self.check_Wi_Fi, 10)
+        self.is_playing = True
 
+    def emergency_button_on(self):
+        self.is_playing = not self.is_playing
+        if self.is_playing:
+            self.play()
+        else:
+            self.stop()
+        
+
+
+    def check_Wi_Fi(self, dt):
+        try:
+            urllib.request.urlopen(url='https://robostep.sakura.ne.jp/', timeout=1)
+        except Exception as e:
+            print(e)
+            self.wifi_ok = 0
+        else:
+            self.wifi_ok = 1
+        if self.wifi_ok:
+            self.ids.wifi.source =  self.gui_path + "/robostep.jpg"
+        else:
+            self.ids.wifi.source =  self.gui_path + "/sample1.jpg"
+            
+        
+    
     def say_hello(self, text):
         self.ids.select_number.id = text.id
         self.ids.com.color = 0, 1, 0, 1
@@ -152,6 +195,24 @@ class StartMenu(Screen):
 
     def extra_mode(self):
         self.ids.slider_mode.pos_hint = {"center_x": 0.5, "center_y": 0.6}
+
+    def param_save(self):
+        self.param_df.loc["solenoid_duty_small",1] = self.ids.slider_speed.value
+        self.param_df.loc["solenoid_duty_big",1] = self.ids.slider_pwm.value
+        self.param_df.loc["gray_threshold",1] = self.ids.slider_gray.value
+        
+        self.param_df.to_csv(self.param_path, header=False)
+    def stop(self):
+        self.is_playing = False
+        Clock.unschedule(self.update)
+    def show_spreadsheet(self):
+        if self.wifi_ok == 0:
+            return
+        webbrowser.open(url="https://docs.google.com/spreadsheets/d/1wosAqe5n1EqrKXIEBkkgfs7rNXQ8HIOxru3Pt8eQRzs/edit#gid=0")
+
+    def slack_func(self):
+        
+        pass
 
     image_texture = ObjectProperty(None)
     image_capture = ObjectProperty(None)
@@ -189,9 +250,9 @@ class StartMenu(Screen):
             self.param_df.loc["solenoid_duty_big",1],
             self.param_df.loc["gray_threshold",1])
         else:
-            err = self.move.no_serial_run(self.param_df.loc["solenoid_duty_big"], 
-            self.param_df.loc["solenoid_duty_small"],
-            self.param_df.loc["gray_threshold"])
+            err = self.move.no_serial_run(self.param_df.loc["solenoid_duty_big",1], 
+            self.param_df.loc["solenoid_duty_small",1],
+            self.param_df.loc["gray_threshold",1])
         if isinstance(err, list):
             pass
         else:
@@ -199,12 +260,12 @@ class StartMenu(Screen):
             if self.move.errs[err] == "no_parts":
                 # pass
                 print("err in ")
-                if self.param_df.loc["slack_on",1]:
-                    print("slack")
-                    self.slack_bot.send("finish parts sort",
-                                        "finish", self.find_parts.tempsave_path + "/ar.png")
+                # if self.param_df.loc["slack_on",1]:
+                #     print("slack")
+                #     self.slack_bot.send("finish parts sort",
+                #                         "finish", self.find_parts.tempsave_path + "/ar.png")
                 print("finish")
-                Clock.unschedule(self.update)
+                self.stop()
         self.add_img(self.move.find_parts.ar_im, "camera_1")
         self.add_img(self.move.class_result_img, "camera_2")
         self.add_img(self.move.target_img, "camera_3")

@@ -22,6 +22,7 @@ class BoxConfig(Screen, BoxLayout):
         self.ids.slider_b.value = int(box_df.length[1])
         self.ids.slider_c.value = int(box_df.length[2])
         self.ids.slider_d.value = int(box_df.length[3])
+        self.ids.image_a.source = '../data/gui/sample1.jpg'
 
     def save(self):
         box_df = pd.read_csv(self.box_list_path, header=0)
